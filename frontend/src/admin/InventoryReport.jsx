@@ -1,13 +1,12 @@
+// src/admin/InventoryReport.jsx
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from "recharts";
-
-const API = "http://localhost:3001";
+import { http } from "../lib/api"; // ⬅️ dùng baseURL từ VITE_API_BASE_URL
 
 export default function InventoryReport() {
-  const [products, setProducts] = useState([]); // [{ TenSanPham, SoLuongTon, NhaCungCap }]
+  const [products, setProducts] = useState([]); // [{ name, stock, supplier }]
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState({ q: "", supplier: "all" });
 
@@ -15,14 +14,16 @@ export default function InventoryReport() {
     (async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`${API}/api/admin/reports/inventory`);
+        const res = await http.get("/api/admin/reports/inventory");
         const rows = (res.data || []).map(p => ({
           name: p.TenSanPham || p.tenSanPham || p.Name || p.name,
           stock: Number(p.SoLuongTon ?? p.soLuongTon ?? p.Stock ?? p.stock ?? 0),
           supplier: p.NhaCungCap || p.nhaCungCap || p.Supplier || p.supplier || "—"
         }));
         setProducts(rows);
-      } finally { setLoading(false); }
+      } finally {
+        setLoading(false);
+      }
     })();
   }, []);
 
@@ -39,28 +40,32 @@ export default function InventoryReport() {
     });
   }, [products, filter]);
 
-  const chartData = useMemo(() => {
-    // Top 12 mặt hàng tồn nhiều nhất
-    return [...filtered].sort((a,b)=>b.stock-a.stock).slice(0,12);
-  }, [filtered]);
+  const chartData = useMemo(
+    () => [...filtered].sort((a, b) => b.stock - a.stock).slice(0, 12),
+    [filtered]
+  );
 
   return (
-    <div className="card" style={{ background:"#fff" }}>
+    <div className="card" style={{ background: "#fff" }}>
       <div className="card-title">Báo cáo tồn kho</div>
 
-      <div style={{ display:"flex", gap:8, alignItems:"center", marginBottom:10 }}>
+      <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 10 }}>
         <input
           placeholder="Tìm theo tên sản phẩm..."
           value={filter.q}
           onChange={e => setFilter(f => ({ ...f, q: e.target.value }))}
-          style={{ flex:1, padding:"8px 10px", borderRadius:8, border:"1px solid #e5e7eb" }}
+          style={{ flex: 1, padding: "8px 10px", borderRadius: 8, border: "1px solid #e5e7eb" }}
         />
         <select
           value={filter.supplier}
           onChange={e => setFilter(f => ({ ...f, supplier: e.target.value }))}
-          style={{ padding:"8px 10px", borderRadius:8, border:"1px solid #e5e7eb" }}
+          style={{ padding: "8px 10px", borderRadius: 8, border: "1px solid #e5e7eb" }}
         >
-          {suppliers.map(s => <option key={s} value={s}>{s === "all" ? "Tất cả NCC" : s}</option>)}
+          {suppliers.map(s => (
+            <option key={s} value={s}>
+              {s === "all" ? "Tất cả NCC" : s}
+            </option>
+          ))}
         </select>
       </div>
 
@@ -70,11 +75,11 @@ export default function InventoryReport() {
           <XAxis dataKey="name" hide />
           <YAxis />
           <Tooltip />
-          <Bar dataKey="stock" radius={[6,6,0,0]} fill="#f59e0b" />
+          <Bar dataKey="stock" radius={[6, 6, 0, 0]} fill="#f59e0b" />
         </BarChart>
       </ResponsiveContainer>
 
-      <div className="card-title" style={{ marginTop:12 }}>Danh sách tồn kho</div>
+      <div className="card-title" style={{ marginTop: 12 }}>Danh sách tồn kho</div>
       <table className="mini">
         <thead>
           <tr>
