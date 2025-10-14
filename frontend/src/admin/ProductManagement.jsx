@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
-import axios from "axios";
 import Swal from "sweetalert2";
 import "../styles/admin/ProductManagement.css";
 import ProductSpecsModal from "./ProductSpecsModal"; // ✅ modal thông số
+import { http, API, safeImage } from "../lib/api";
 
 const emptyProduct = {
   TenSanPham: "", HangSanXuat: "", CauHinh: "",
@@ -12,7 +12,6 @@ const emptyProduct = {
   HinhAnhList: []
 };
 
-const API = "http://localhost:3001";
 
 export default function ProductManagement() {
   const [list, setList] = useState([]);
@@ -28,8 +27,9 @@ export default function ProductManagement() {
 
   const load = useCallback(async () => {
     try {
-      const url = search ? `${API}/api/products?search=${encodeURIComponent(search)}` : `${API}/api/products`;
-      const res = await axios.get(url);
+      const res = await http.get("/api/products", {
+           params: search ? { search } : undefined,
+         });
       setList(res.data || []);
     } catch (err) {
       console.error("Load products error:", err);
@@ -68,9 +68,9 @@ export default function ProductManagement() {
 
     try {
       if (isEdit) {
-        await axios.put(`${API}/api/products/${editingId}`, payload);
+        await http.put(`/api/products/${editingId}`, payload);
       } else {
-        await axios.post(`${API}/api/products`, payload);
+        await http.post(`/api/products`, payload);
       }
 
       Swal.fire({
@@ -134,7 +134,7 @@ export default function ProductManagement() {
     if (!result.isConfirmed) return;
 
     try {
-      await axios.delete(`${API}/api/products/${id}`);
+       await http.delete(`/api/products/${id}`);
       await load();
       Swal.fire({ icon: "success", title: "Đã xóa", timer: 1000, showConfirmButton: false });
     } catch (err) {
@@ -176,7 +176,7 @@ export default function ProductManagement() {
       for (const file of files) {
         const fd = new FormData();
         fd.append("file", file);
-        const res = await axios.post(`${API}/api/upload`, fd, {
+          const res = await http.post(`/api/upload`, fd, {
           headers: { "Content-Type": "multipart/form-data" }
         });
         uploadedPaths.push(res.data?.path);
@@ -205,6 +205,7 @@ export default function ProductManagement() {
   };
 
   const imgUrl = (src) => (src?.startsWith("http") ? src : `${API}${src}`);
+  const imgUrl = (src) => safeImage(src);
 
   // ✅ mở modal Thông số
   const openSpecs = (p) => {
