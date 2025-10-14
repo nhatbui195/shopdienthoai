@@ -1,8 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import Swal from "sweetalert2";
-import "../styles/admin/AdminHeader.css";
-
-const API = "http://localhost:3001";
+ import Swal from "sweetalert2";
+ import "../styles/admin/AdminHeader.css";
+ import { http, API } from "../../lib/api"; 
 const LS_LAST_SEEN_KEY = "admin_last_seen_order_marker";
 
 /** Thuần: chuẩn hoá dữ liệu đơn hàng */
