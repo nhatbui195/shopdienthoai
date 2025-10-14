@@ -61,9 +61,8 @@ export default function AdminHeader({ onToggleSidebar, sidebarOpen }) {
   /** Fetch đơn gần đây (ổn định tham chiếu) */
   const fetchRecent = useCallback(async () => {
     try {
-      const res = await fetch(`${API}/api/admin/orders/recent?limit=5`, { credentials: "include" });
-      if (res.ok) {
-        const raw = await res.json();
+    const { data: raw } = await http.get("/api/admin/orders/recent", { params: { limit: 5 } });
+     if (Array.isArray(raw)) {
         const list = normalizeOrders(raw);
         setRecentOrders(list);
 
