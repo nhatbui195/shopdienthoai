@@ -1,17 +1,11 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "main": "api/index.js",
   "type": "commonjs",
+  "scripts": {
+    "dev": "vercel dev"
+  },
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
@@ -20,9 +14,7 @@
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.0.2",
     "mysql2": "^3.15.0",
-    "node-cron": "^4.2.1"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.10"
+    "node-cron": "^4.2.1",
+    "serverless-http": "^4.0.0"
   }
 }

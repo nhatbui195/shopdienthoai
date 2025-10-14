@@ -13,27 +13,36 @@ const PORT = 3001;
 
 /* ===== CORS with credentials (DEV whitelist) ===== */
 const whitelist = [
-  "http://localhost:5173",
-  "https://shopdienthoai-nhat.vercel.app"
+  'http://localhost:5173',
+  'https://shopdienthoai-nhat.vercel.app',     // prod FE
 ];
-app.use(cors({
-  origin: whitelist,
-  credentials: true
-}));
+
+const isAllowedOrigin = (origin) => {
+  if (!origin) return true; // Postman/cURL/file://
+  if (whitelist.includes(origin)) return true;
+
+  // Cho phép các bản preview Vercel (subdomain bất kỳ của vercel.app)
+  try {
+    const url = new URL(origin);
+    if (url.hostname.endsWith('.vercel.app')) return true;
+  } catch (_) {}
+
+  return false;
+};
 
 const corsOptions = {
   origin(origin, cb) {
-    // Cho phép Postman/cURL (origin null) + 2 origin dev
-    if (!origin || whitelist.includes(origin)) return cb(null, true);
-    return cb(new Error('Not allowed by CORS'));
+    return isAllowedOrigin(origin) ? cb(null, true) : cb(new Error('Not allowed by CORS'));
   },
-  credentials: true,        // cho phép gửi cookie/authorization
+  credentials: true,
   methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
-  // KHÔNG set allowedHeaders -> cors tự phản chiếu Access-Control-Request-Headers
-  // exposedHeaders có thể thêm khi cần đọc header phản hồi đặc biệt (vd: set-cookie)
+  // KHÔNG cần allowedHeaders -> cors tự phản chiếu từ preflight
 };
-
 app.use(cors(corsOptions));
+
+// (tuỳ chọn) xử lý nhanh preflight để tránh middleware khác can thiệp:
+app.options('*', cors(corsOptions));
+
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -62,9 +71,8 @@ const storage = multer.diskStorage({
     const uniqueName = Date.now() + path.extname(file.originalname);
     cb(null, uniqueName);
   }
-});
+}); 
 const upload = multer({ storage });
-// ───────────────────────────────────────────────────────────────────────────────
 
 /* ================================
    AUTH - Đăng ký / Đăng nhập
@@ -1099,10 +1107,10 @@ app.get('/api/suggestions', (req, res) => {
         if (list.length > 0) firstImage = list[0];
       }
 
-      const formattedUrl = firstImage.startsWith('http')
-        ? firstImage
-        : `http://localhost:${PORT}${firstImage}`;
-
+     const origin = `${req.protocol}://${req.headers.host}`; // ex: https://shop-be.vercel.app
+   const formattedUrl = firstImage.startsWith('http')
+   ? firstImage
+   : `${origin}${firstImage}`;
       return {
         IDSanPham: product.IDSanPham,
         TenSanPham: product.TenSanPham,
@@ -1219,8 +1227,7 @@ app.put('/api/products/:id/extended', (req, res) => {
 
 
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server đang chạy tại http://localhost:${PORT}`);
-});
+
+module.exports = app;
 
 // Backend (index.js)
