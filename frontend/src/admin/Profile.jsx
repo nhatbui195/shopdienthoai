@@ -1,8 +1,7 @@
+// src/admin/Profile.jsx
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { api, fileURL } from "../lib/api";
 import "../styles/admin/Profile.css";
-
-const API = "http://localhost:3001";
 
 export default function Profile() {
   const [me, setMe] = useState({
@@ -16,11 +15,11 @@ export default function Profile() {
   const [file, setFile] = useState(null);
   const [saving, setSaving] = useState(false);
 
-  // load info hiện tại
+  // Load thông tin hiện tại
   useEffect(() => {
     (async () => {
       try {
-        const res = await axios.get(`${API}/api/admin/me`, { withCredentials: true });
+        const res = await api.get("/api/admin/me");
         const u = res.data || {};
         setMe({
           username: u.username || u.TenDangNhap || "",
@@ -28,7 +27,7 @@ export default function Profile() {
           email: u.email || "",
           phone: u.phone || u.SoDienThoai || "",
           address: u.address || u.DiaChi || "",
-          avatarUrl: u.avatarUrl || u.AnhDaiDien || "",
+          avatarUrl: fileURL(u.avatarUrl || u.AnhDaiDien || ""),
         });
       } catch {
         // noop
@@ -36,6 +35,7 @@ export default function Profile() {
     })();
   }, []);
 
+  // Chọn file -> preview ngay
   const onPick = (e) => {
     const f = e.target.files?.[0];
     if (!f) return;
@@ -49,27 +49,27 @@ export default function Profile() {
     setSaving(true);
     try {
       // 1) cập nhật thông tin text
-      await axios.put(
-        `${API}/api/admin/me`,
-        {
-          username: me.username,
-          fullName: me.fullName,
-          email: me.email,
-          phone: me.phone,
-          address: me.address,
-        },
-        { withCredentials: true }
-      );
+      await api.put("/api/admin/me", {
+        username: me.username,
+        fullName: me.fullName,
+        email: me.email,
+        phone: me.phone,
+        address: me.address,
+      });
 
       // 2) nếu có chọn ảnh mới -> upload
       if (file) {
         const fd = new FormData();
         fd.append("avatar", file);
-        await axios.post(`${API}/api/admin/me/avatar`, fd, {
+        const up = await api.post("/api/admin/me/avatar", fd, {
           headers: { "Content-Type": "multipart/form-data" },
-          withCredentials: true,
         });
+        const newUrl = up?.data?.url || up?.data?.avatarUrl;
+        if (newUrl) {
+          setMe((m) => ({ ...m, avatarUrl: fileURL(newUrl) }));
+        }
       }
+
       alert("Đã lưu hồ sơ.");
     } catch {
       alert("Lưu thất bại. Vui lòng thử lại!");
@@ -78,14 +78,20 @@ export default function Profile() {
     }
   };
 
+  // URL hiển thị (blob giữ nguyên, còn lại ghép base)
+  const displayAvatar =
+    me.avatarUrl && me.avatarUrl.startsWith("blob:")
+      ? me.avatarUrl
+      : fileURL(me.avatarUrl);
+
   return (
     <div className="card profile">
       <div className="profile-title">Hồ sơ cá nhân</div>
       <form onSubmit={onSubmit} className="profile-grid">
         <div className="avatar-col">
           <div className="avatar">
-            {me.avatarUrl ? (
-              <img src={me.avatarUrl} alt="avatar" />
+            {displayAvatar ? (
+              <img src={displayAvatar} alt="avatar" />
             ) : (
               <i className="bx bx-user" />
             )}
