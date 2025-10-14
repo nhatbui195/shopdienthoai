@@ -1,24 +1,28 @@
+// src/admin/UserManagement.jsx
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import Swal from "sweetalert2";
+import { api } from "../lib/api";                 // ✅ client chung (đã set baseURL & credentials)
 import "../styles/admin/UserManagement.css";
-
-const API = "http://localhost:3001";
 
 export default function UserManagement() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // lấy id của user hiện tại (fallback nhiều key)
   const currentUserId = (() => {
-    try { return JSON.parse(localStorage.getItem("user"))?.id || null; }
-    catch { return null; }
+    try {
+      const u = JSON.parse(localStorage.getItem("user")) || {};
+      return u.MaTaiKhoan || u.id || u.userId || null;
+    } catch {
+      return null;
+    }
   })();
 
   const load = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API}/api/users`);
-      setUsers(res.data || []);
+      const res = await api.get("/api/users");
+      setUsers(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.error("Load users error:", err);
       Swal.fire({ icon: "error", title: "Lỗi", text: "Không tải được danh sách người dùng." });
@@ -47,9 +51,8 @@ export default function UserManagement() {
     if (!ok.isConfirmed) return;
 
     Swal.fire({ title: "Đang xóa...", allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-
     try {
-      await axios.delete(`${API}/api/users/${id}`);
+      await api.delete(`/api/users/${id}`);
       await load();
       Swal.fire({ icon: "success", title: "Đã xóa người dùng", timer: 900, showConfirmButton: false });
     } catch (err) {
@@ -60,9 +63,9 @@ export default function UserManagement() {
 
   const roleBadge = (role) => {
     const v = String(role || "").toLowerCase();
-    if (v === "nhanvien") return <span className="um-badge um-badge--staff">Nhân viên</span>;
+    if (v === "nhanvien" || v === "nhân viên" || v === "staff")
+      return <span className="um-badge um-badge--staff">Nhân viên</span>;
     return <span className="um-badge um-badge--user">Khách hàng</span>;
-    // Nếu sau này có thêm vai trò khác thì bổ sung ở đây.
   };
 
   return (
@@ -83,25 +86,35 @@ export default function UserManagement() {
               </tr>
             </thead>
             <tbody>
-              {users.map((u) => (
-                <tr key={u.MaTaiKhoan}>
-                  <td>{u.MaTaiKhoan}</td>
-                  <td>{u.TenDangNhap}</td>
-                  <td>{roleBadge(u.VaiTro)}</td>
-                  <td>
-                    <div className="um-actions">
-                      <button
-                        className={`um-btn um-btn--danger ${currentUserId && Number(u.MaTaiKhoan) === Number(currentUserId) ? "um-btn--muted" : ""}`}
-                        onClick={() => removeUser(u.MaTaiKhoan)}
-                        disabled={currentUserId && Number(u.MaTaiKhoan) === Number(currentUserId)}
-                        title={currentUserId && Number(u.MaTaiKhoan) === Number(currentUserId) ? "Không thể xóa chính mình" : "Xóa tài khoản"}
-                      >
-                        Xóa
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              {users.map((u) => {
+                const id = u.MaTaiKhoan || u.id || u.userId;
+                const username = u.TenDangNhap || u.username || u.email || `user-${id}`;
+                return (
+                  <tr key={id}>
+                    <td>{id}</td>
+                    <td>{username}</td>
+                    <td>{roleBadge(u.VaiTro || u.role)}</td>
+                    <td>
+                      <div className="um-actions">
+                        <button
+                          className={`um-btn um-btn--danger ${
+                            currentUserId && Number(id) === Number(currentUserId) ? "um-btn--muted" : ""
+                          }`}
+                          onClick={() => removeUser(id)}
+                          disabled={currentUserId && Number(id) === Number(currentUserId)}
+                          title={
+                            currentUserId && Number(id) === Number(currentUserId)
+                              ? "Không thể xóa chính mình"
+                              : "Xóa tài khoản"
+                          }
+                        >
+                          Xóa
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
               {users.length === 0 && (
                 <tr>
                   <td colSpan={4}>Không có dữ liệu</td>
