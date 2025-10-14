@@ -1,9 +1,8 @@
+// src/admin/ReviewManagement.jsx
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import { useSearchParams, useParams } from "react-router-dom";
+import { api } from "../lib/api";               // ✅ dùng client chung
 import "../styles/admin/ReviewManagement.css";
-
-const API = "http://localhost:3001";
 
 export default function ReviewManagement({ productId: productIdProp }) {
   const params = useParams();
@@ -12,8 +11,8 @@ export default function ReviewManagement({ productId: productIdProp }) {
     productIdProp || params?.id || sp.get("id") || sp.get("productId");
 
   const [product, setProduct] = useState(null);
-  const [reviews, setReviews] = useState([]);  // đánh giá sao
-  const [comments, setComments] = useState([]); // bình luận
+  const [reviews, setReviews] = useState([]);    // đánh giá sao
+  const [comments, setComments] = useState([]);  // bình luận
   const [loading, setLoading] = useState(false);
   const [moderating, setModerating] = useState(false);
 
@@ -22,20 +21,19 @@ export default function ReviewManagement({ productId: productIdProp }) {
     [product]
   );
 
-  // ✅ Bọc loadData bằng useCallback để dùng trong useEffect
   const loadData = useCallback(async () => {
     if (!productId) {
+      setProduct(null);
       setReviews([]);
       setComments([]);
-      setProduct(null);
       return;
     }
     setLoading(true);
     try {
       const [p, rv, cm] = await Promise.all([
-        axios.get(`${API}/api/products/${productId}`),
-        axios.get(`${API}/api/reviews?productId=${productId}`),
-        axios.get(`${API}/api/comments?productId=${productId}`),
+        api.get(`/api/products/${productId}`),
+        api.get(`/api/reviews`,   { params: { productId } }),
+        api.get(`/api/comments`,  { params: { productId } }),
       ]);
       setProduct(p.data || null);
       setReviews(rv.data || []);
@@ -47,7 +45,6 @@ export default function ReviewManagement({ productId: productIdProp }) {
     }
   }, [productId]);
 
-  // ✅ Thêm loadData vào deps
   useEffect(() => {
     loadData().catch(() => {});
   }, [loadData]);
@@ -55,7 +52,7 @@ export default function ReviewManagement({ productId: productIdProp }) {
   const approveReview = async (id, approved) => {
     setModerating(true);
     try {
-      await axios.put(`${API}/api/reviews/${id}/approve`, { approved });
+      await api.put(`/api/reviews/${id}/approve`, { approved });
       await loadData();
     } catch (e) {
       console.error(e);
@@ -69,7 +66,7 @@ export default function ReviewManagement({ productId: productIdProp }) {
     if (!window.confirm("Xoá đánh giá này?")) return;
     setModerating(true);
     try {
-      await axios.delete(`${API}/api/reviews/${id}`);
+      await api.delete(`/api/reviews/${id}`);
       await loadData();
     } catch (e) {
       console.error(e);
@@ -83,7 +80,7 @@ export default function ReviewManagement({ productId: productIdProp }) {
     if (!window.confirm("Xoá bình luận này?")) return;
     setModerating(true);
     try {
-      await axios.delete(`${API}/api/comments/${id}`);
+      await api.delete(`/api/comments/${id}`);
       await loadData();
     } catch (e) {
       console.error(e);
@@ -165,10 +162,3 @@ export default function ReviewManagement({ productId: productIdProp }) {
                   </button>
                 </div>
               </div>
-            ))}
-          </section>
-        </>
-      )}
-    </div>
-  );
-}
