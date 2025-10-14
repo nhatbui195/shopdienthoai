@@ -1,37 +1,28 @@
 // src/lib/api.js
 import axios from "axios";
 
-// Lấy BASE URL:
-// - Dev: localhost:3001
-// - Prod: ưu tiên VITE_API_URL (anh đã tạo trên Vercel), fallback sang VITE_API_BASE_URL
-const API_BASE =
-  (import.meta.env?.DEV
+// Dev thì dùng localhost, build/preview/prod thì lấy từ ENV (Vercel)
+// .replace(/\/+$/, "") để bỏ dấu "/" thừa ở cuối, tránh "//uploads"
+const API_BASE = (
+  import.meta.env?.DEV
     ? "http://localhost:3001"
     : (import.meta.env?.VITE_API_URL || import.meta.env?.VITE_API_BASE_URL || "")
-  ).replace(/\/+$/, ""); // bỏ dấu "/" cuối cho sạch
+).replace(/\/+$/, "");
 
 export const api = axios.create({
-  baseURL: API_BASE || "/",       // để trống vẫn không lỗi
-  withCredentials: true,          // nếu dùng cookie/session
+  baseURL: API_BASE || "/",   // để trống vẫn không lỗi
+  withCredentials: true,      // nếu có cookie/session
   timeout: 15000,
 });
 
-// (tuỳ chọn) Interceptor nhỏ: log lỗi gọn gàng
-api.interceptors.response.use(
-  (r) => r,
-  (err) => {
-    // console.error("API error:", err?.response?.data || err.message);
-    return Promise.reject(err);
-  }
-);
-
-// Ghép URL file/tệp tĩnh từ BE (vd: /uploads/xxx.png)
+// Ghép URL cho ảnh/tệp tĩnh BE (ví dụ: "/uploads/abc.png" -> "https://be.vercel.app/uploads/abc.png")
 export const fileURL = (p) => {
   if (!p) return "";
-  if (/^https?:\/\//i.test(p)) return p;       // đã là URL tuyệt đối
-  if (!API_BASE) return p;                     // chưa set BASE thì trả nguyên
-  return `${API_BASE}${p.startsWith("/") ? "" : "/"}${p}`;
+  if (/^https?:\/\//i.test(p)) return p; // đã là URL tuyệt đối
+  const prefix = API_BASE || "";
+  const slash = p.startsWith("/") ? "" : "/";
+  return `${prefix}${slash}${p}`;
 };
 
-// (tuỳ chọn) export ra dùng nơi khác
+// (tuỳ chọn) export luôn BASE để debug
 export { API_BASE };
