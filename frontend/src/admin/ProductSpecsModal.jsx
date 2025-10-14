@@ -1,10 +1,9 @@
 // src/admin/ProductSpecsModal.jsx
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import Swal from "sweetalert2";
+import { api } from "../lib/api";
 import "../styles/admin/ProductSpecsModal.css";
 
-const API = "http://localhost:3001";
 
 /* --------- Helpers --------- */
 const toArray = (val) => {
@@ -117,7 +116,7 @@ export default function ProductSpecsModal({ open, product, onClose, onSaved }) {
       setLoading(true);
       try {
         // 1) specs
-        const res = await axios.get(`${API}/api/chitietsanpham/${product.MaSanPham}`);
+        const res = await api.get(`/api/chitietsanpham/${product.MaSanPham}`);
         const d = res.data || {};
         setForm((f) => ({
           ...f,
@@ -144,7 +143,7 @@ export default function ProductSpecsModal({ open, product, onClose, onSaved }) {
 
       // 2) variants từ bảng chitietthem -> để đổ TagInput
       try {
-        const vres = await axios.get(`${API}/api/products/${product.MaSanPham}/variants`);
+        const vres = await api.get(`/api/products/${product.MaSanPham}/variants`);
         const variants = Array.isArray(vres.data) ? vres.data : [];
         const colors = Array.from(new Set(variants.map(v => v.MauSac).filter(Boolean)));
         const caps   = Array.from(new Set(variants.map(v => v.PhienBan).filter(Boolean)));
@@ -187,11 +186,11 @@ export default function ProductSpecsModal({ open, product, onClose, onSaved }) {
       };
 
       // 1) Lưu specs (API cũ)
-      await axios.post(`${API}/api/chitietsanpham`, payload);
+      await api.post(`/api/chitietsanpham`, payload);
 
       // 2) Replace variants theo TagInput vào bảng chitietthem
       const combos = makeCombos(form.MauSacList, form.PhienBanList);
-      await axios.post(`${API}/api/products/${product.MaSanPham}/variants/replace`, combos);
+      await api.post(`/api/products/${product.MaSanPham}/variants/replace`, combos);
 
       Swal.fire({ icon: "success", title: "Đã lưu thông số & biến thể", timer: 1100, showConfirmButton: false });
       onSaved && onSaved();
