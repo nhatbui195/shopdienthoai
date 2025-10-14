@@ -1,0 +1,35 @@
+.logo-broken {
+  display: inline-block;
+  text-decoration: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.logo-broken__inner {
+  display: inline-block;
+  padding: 4px 8px;
+  /* Tùy style thương hiệu của anh ở đây */
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, sans-serif;
+  font-weight: 800;
+  letter-spacing: .5px;
+  line-height: 1;
+  /* Màu chính: có thể đồng bộ header */
+  color: #111;
+}
+
+.lb-char {
+  display: inline-block;            /* Quan trọng để transform theo từng ký tự */
+  will-change: transform, opacity;  /* Tối ưu hiệu năng */
+}
+
+.logo-broken:hover { cursor: pointer; }
+
+/* Dark mode (tuỳ chọn) */
+@media (prefers-color-scheme: dark) {
+  .logo-broken__inner { color: #fff; }
+}
+
+/* Nếu người dùng bật giảm chuyển động, giữ logo tĩnh */
+@media (prefers-reduced-motion: reduce) {
+  .lb-char { transition: none !important; }
+}

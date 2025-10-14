@@ -1,0 +1,73 @@
+/* Overlay fullscreen (tùy chọn) */
+.loading.loading--fullscreen{
+  position: fixed; inset: 0; z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,.65);
+  backdrop-filter: blur(2px);
+}
+.loading{ display:inline-flex; flex-direction:column; align-items:center; gap:10px; }
+.loading__text{ font-size:14px; opacity:.85; text-align:center; user-select:none; }
+
+/* Spinner-4 */
+.spinner-4{
+  width: var(--size, 50px);
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  padding: 1px;
+
+  /* vệt màu quay */
+  background: conic-gradient(#0000 10%, var(--color, #f03355)) content-box;
+
+  /* mask (webkit + tiêu chuẩn) để tạo khe + rỗng giữa */
+  -webkit-mask:
+    repeating-conic-gradient(#0000 0deg, #000 1deg 20deg, #0000 21deg 36deg),
+    radial-gradient(farthest-side, #0000 calc(100% - var(--b, 8px) - 1px), #000 calc(100% - var(--b, 8px)));
+  -webkit-mask-composite: destination-in;
+
+  mask:
+    repeating-conic-gradient(transparent 0deg, #000 1deg 20deg, transparent 21deg 36deg),
+    radial-gradient(farthest-side, transparent calc(100% - var(--b, 8px) - 1px), #000 calc(100% - var(--b, 8px)));
+  mask-composite: intersect;
+
+  /* tên keyframes phải khớp với inline style */
+  animation: spinner4 1s steps(10) infinite;
+}
+
+/* keyframes đúng tên 'spinner4' */
+@keyframes spinner4 { to { transform: rotate(1turn); } }
+.loading{
+  display:inline-grid;
+  justify-items:center;
+  gap:10px;
+  color:#111827;
+  z-index: 13000;
+}
+.loading--fullscreen{
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(255,255,255,.65);
+  backdrop-filter: blur(2px);
+  z-index: 13000; /* cao hơn modal login */
+}
+
+.spinner-4{
+  width: var(--size, 50px);
+  height: var(--size, 50px);
+  border-radius: 50%;
+  border: var(--b, 8px) solid transparent;
+  border-top-color: var(--color, #f03355);
+  border-right-color: var(--color, #f03355);
+  /* animation set inline từ component: spinner4 steps(10) infinite */
+  will-change: transform;
+}
+
+@keyframes spinner4{
+  to { transform: rotate(1turn); }
+}
+
+.loading__text{
+  font-size: 14px;
+  color: #374151;
+}

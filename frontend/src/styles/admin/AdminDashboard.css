@@ -1,0 +1,78 @@
+/* ===== Layout tổng ===== */
+.ad-layout{
+  display:grid;
+  grid-template-columns:260px 1fr;  /* sidebar | main */
+  height:100vh;                     /* quan trọng: chặn cuộn thân trang */
+  overflow:hidden;                  /* chỉ cho khu vực main cuộn */
+  background:#f3f4f6;
+}
+
+/* Vỏ sidebar: không nền để khỏi lộ vệt khi trượt */
+.ad-sidebar{
+  position:sticky; top:0;           /* cố định khi cuộn */
+  height:100vh;
+  transform:translateX(0);
+  transition:transform .3s ease;
+  will-change:transform;
+  z-index:45;
+  background:transparent;
+  color:inherit;
+  overflow:hidden;                   /* chặn cuộn toàn sidebar (chỉ nav bên trong cuộn) */
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+
+/* Khu vực chính (header + content) */
+.ad-main{
+  display:grid;
+  grid-template-rows:64px minmax(0,1fr);  /* header dính + vùng cuộn */
+  height:100vh;                           /* cho sticky hoạt động trong container cuộn */
+  position:relative;
+  overflow:hidden;                        /* chỉ .ad-content cuộn */
+}
+
+/* Phần nội dung: là vùng cuộn duy nhất */
+.ad-content{
+  min-height:0;     /* để overflow hoạt động đúng trong grid */
+  overflow:auto;    /* cuộn ở đây */
+  padding:20px;
+}
+
+/* ===== Thu gọn sidebar (desktop) ===== */
+.ad-layout.ad-collapsed{
+  grid-template-columns:0px 1fr;
+}
+.ad-layout.ad-collapsed .ad-sidebar{
+  transform:translateX(-100%);
+  pointer-events:none;
+}
+/* Tắt bóng khi trượt để khỏi thấy vệt đen */
+.ad-layout.ad-collapsed .ad-sidebar .as{
+  box-shadow:none !important;
+  border-right:1px solid #e5e7eb;
+}
+
+/* ===== Mobile: sidebar overlay ===== */
+@media (max-width:1024px){
+  .ad-layout{ grid-template-columns:0 1fr; }
+  .ad-sidebar{
+    position:fixed; left:0; top:0; bottom:0; width:260px;
+    z-index:55;
+    box-shadow:8px 0 24px rgba(0,0,0,.25);
+    transform:translateX(-100%);
+  }
+  .ad-layout:not(.ad-collapsed) .ad-sidebar{
+    transform:translateX(0);
+    pointer-events:auto;
+  }
+}
+
+/* ===== Nút burger (để sẵn tại đây cho tiện) ===== */
+.ah-burger{
+  display:inline-grid; place-items:center;
+  width:40px; height:40px; border-radius:10px;
+  background:#0b1220; border:1px solid rgba(255,255,255,.08);
+  color:#e5e7eb; cursor:pointer;
+  transition:transform .15s ease, opacity .15s ease;
+}
+.ah-burger:active{ transform:scale(.96); opacity:.9; }

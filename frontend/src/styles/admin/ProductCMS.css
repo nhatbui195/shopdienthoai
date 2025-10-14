@@ -1,0 +1,314 @@
+/* ============== Product CMS (Admin) ============== */
+
+:root{
+  --bg:#f3f4f6;
+  --card:#ffffff;
+  --muted:#6b7280;
+  --line:#e5e7eb;
+  --line-2:#eef2f7;
+  --primary:#2563eb;
+  --primary-600:#1d4ed8;
+  --primary-50:#eff6ff;
+  --danger:#ef4444;
+  --danger-50:#fff1f2;
+  --shadow:0 2px 10px rgba(0,0,0,.06);
+  --radius:12px;
+  --radius-sm:10px;
+  --radius-lg:16px;
+}
+
+/* Wrap */
+.cms-wrap{
+  display:grid;
+  grid-template-columns:280px 1fr 440px;
+  gap:16px;
+  padding:16px;
+  background:var(--bg);
+  min-height:calc(100vh - 64px);
+  box-sizing:border-box;
+}
+
+/* Cards */
+.cms-sidebar,
+.cms-center,
+.cms-editor{
+  background:var(--card);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:16px;
+  min-height:480px;
+}
+
+/* Sidebar trái */
+.cms-sidebar h3{
+  margin:0 0 6px;
+  font-size:18px;
+  font-weight:700;
+}
+.cms-sidebar .muted{ margin:0 0 10px; }
+
+.sel-card{
+  border:1px solid var(--line);
+  border-radius:var(--radius-sm);
+  padding:12px;
+  margin:10px 0;
+  background:#fafbff;
+}
+.sel-title{ font-weight:700; margin:0 0 4px; }
+.sel-sub{ color:var(--muted); font-size:13.5px; margin-bottom:10px; }
+
+.sel-empty{
+  color:var(--muted);
+  background:#fafafa;
+  border:1px dashed var(--line);
+  border-radius:var(--radius-sm);
+  padding:12px;
+  text-align:center;
+}
+
+.tips{
+  font-size:13px;
+  color:var(--muted);
+  background:#fafafa;
+  border:1px solid var(--line);
+  border-radius:var(--radius-sm);
+  padding:10px;
+  margin-top:12px;
+  line-height:1.5;
+}
+
+/* Khu giữa: Bảng sản phẩm */
+.cms-center .bar{
+  display:flex; gap:8px; margin-bottom:10px;
+}
+.cms-center .bar input{
+  flex:1;
+  height:38px;
+  padding:0 12px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  outline:none;
+  transition:border .15s, box-shadow .15s;
+}
+.cms-center .bar input:focus{
+  border-color:var(--primary);
+  box-shadow:0 0 0 3px var(--primary-50);
+}
+
+/* Bọc bảng cho scroll */
+.tbl-wrap{
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.tbl{
+  border-collapse:collapse;
+  width:100%;
+}
+.tbl thead th{
+  background:#f8fafc;
+  color:#111827;
+  font-weight:600;
+  font-size:14px;
+  border-bottom:1px solid var(--line);
+  padding:10px 12px;
+  text-align:left;
+  white-space:nowrap;
+}
+.tbl tbody td{
+  border-bottom:1px solid var(--line-2);
+  padding:10px 12px;
+  vertical-align:middle;
+  font-size:14px;
+}
+.tbl tbody tr:hover{
+  background:#fafcff;
+}
+.tbl tbody tr.active{
+  background:#eef4ff;
+}
+.loading,
+.muted{
+  color:var(--muted);
+  padding:10px;
+}
+
+/* Khu phải: Editor */
+.cms-editor h3{
+  margin:0 0 10px;
+  font-size:18px;
+  font-weight:700;
+}
+
+.panel{
+  border-top:1px dashed var(--line);
+  padding-top:12px;
+  margin-top:12px;
+}
+.panel-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:8px;
+}
+.panel-head h4{
+  margin:0;
+  font-size:15.5px;
+  font-weight:700;
+}
+
+/* Group field */
+.group{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  border:1px solid var(--line);
+  border-radius:var(--radius-sm);
+  padding:10px;
+  margin-bottom:10px;
+  background:#fcfdff;
+}
+.group.row{
+  flex-direction:row;
+  align-items:center;
+}
+.group input,
+.group textarea{
+  width:100%;
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:9px 12px;
+  font-size:14px;
+  outline:none;
+  transition:border .15s, box-shadow .15s, background .15s;
+  background:#fff;
+}
+.group textarea{ resize:vertical; }
+.group input:focus,
+.group textarea:focus{
+  border-color:var(--primary);
+  box-shadow:0 0 0 3px var(--primary-50);
+  background:#fff;
+}
+
+/* Buttons */
+.btn,
+.btn-save,
+.btn-del{
+  -webkit-tap-highlight-color: transparent;
+  border-radius:10px;
+  border:1px solid var(--line);
+  background:#fff;
+  padding:8px 12px;
+  font-size:14px;
+  cursor:pointer;
+  transition:background .15s, border .15s, transform .05s;
+}
+.btn:hover{ background:#f3f4f6; }
+.btn:active{ transform:translateY(1px); }
+
+.btn-save{
+  background:var(--primary);
+  color:#fff;
+  border-color:var(--primary);
+}
+.btn-save:hover{ background:var(--primary-600); border-color:var(--primary-600); }
+.btn-save:disabled{ opacity:.7; cursor:not-allowed; }
+
+.btn-del{
+  background:var(--danger-50);
+  border-color:#fecaca;
+  color:#b91c1c;
+}
+.btn-del:hover{
+  background:#ffe6e9;
+}
+
+/* Save bar */
+.save-bar{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  margin-top:12px;
+}
+
+/* Empty & helpers */
+.empty{
+  color:var(--muted);
+  background:#fafafa;
+  border:1px dashed var(--line);
+  border-radius:var(--radius-sm);
+  padding:16px;
+  text-align:center;
+}
+
+/* Small controls inside table */
+.tbl .btn{
+  padding:6px 10px;
+  font-size:13px;
+}
+
+/* Scroll aesthetic */
+.tbl-wrap{
+  overflow:auto;
+  max-height:calc(100vh - 220px);
+}
+.cms-editor{
+  overflow:auto;
+  max-height:calc(100vh - 96px);
+}
+
+/* Focus-visible for keyboard users */
+.btn:focus-visible,
+.btn-save:focus-visible,
+.btn-del:focus-visible,
+.group input:focus-visible,
+.group textarea:focus-visible,
+.cms-center .bar input:focus-visible{
+  outline:2px solid var(--primary);
+  outline-offset:2px;
+}
+
+/* Subtle badges (if cần) */
+.badge{
+  display:inline-flex;
+  align-items:center;
+  padding:2px 8px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:#fafafa;
+  font-size:12px;
+  color:#374151;
+}
+
+/* ============== Responsive ============== */
+
+/* 1280px: thu cột phải */
+@media (max-width: 1280px){
+  .cms-wrap{
+    grid-template-columns:260px 1fr 380px;
+  }
+}
+
+/* 1024px: về 2 cột */
+@media (max-width: 1024px){
+  .cms-wrap{
+    grid-template-columns:280px 1fr;
+  }
+  .cms-editor{ order:3; }
+}
+
+/* 768px: về 1 cột xếp dọc */
+@media (max-width: 768px){
+  .cms-wrap{
+    grid-template-columns:1fr;
+  }
+  .tbl-wrap{ max-height:unset; }
+  .cms-editor{ max-height:unset; }
+}
+
+/* Prefer reduced motion */
+@media (prefers-reduced-motion: reduce){
+  *{ transition:none !important; }
+}

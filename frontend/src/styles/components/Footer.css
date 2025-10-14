@@ -1,0 +1,190 @@
+/* ================= Footer (scoped) =================
+   - Tất cả rule nằm trong .ft (không ảnh hưởng global)
+   - Dùng Boxicons: <i class='bx bx-phone'>...</i>...
+   - Modifier:
+     .ft--flush     : full-bleed (tràn mép 2 bên)
+     .ft--brand-red : tone đỏ thương hiệu
+==================================================== */
+
+/* ---------- Tokens: LIGHT default ---------- */
+.ft{
+  --bg-section:#f6f7fb;   /* nền vùng footer (khác nền trang 1 chút để phân tầng) */
+  --panel:#ffffff;        /* nền khối nội dung trắng */
+  --text:#0f172a;         /* chữ chính */
+  --muted:#6b7280;        /* chữ phụ */
+  --accent:#d70000;       /* điểm nhấn thương hiệu */
+  --border:#e5e7eb;       /* viền tinh tế */
+  --chip:#ffffff;         /* chip/button nền */
+  --radius:14px;
+
+  color:var(--text);
+  background:var(--bg-section);
+  margin-top:48px;
+  line-height:1.65;
+  position:relative;
+}
+
+/* Tràn mép khi cần loại padding container cha */
+.ft.ft--flush{
+  width:100vw; left:50%; right:50%;
+  margin-left:-50vw; margin-right:-50vw; position:relative;
+}
+
+/* ---------- Layout ---------- */
+.ft .ft-top{
+  max-width:1120px; margin:0 auto;
+  padding:28px 16px 12px;
+  display:grid; gap:24px;
+  grid-template-columns:2fr 1fr 1fr 1.4fr;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:0 10px 24px rgba(15,23,42,.06);
+}
+@media (max-width: 992px){ .ft .ft-top{ grid-template-columns:1fr 1fr; } }
+@media (max-width: 600px){ .ft .ft-top{ grid-template-columns:1fr; } }
+
+.ft .ft-col h4{
+  margin:0 0 12px;
+  font-size:16px; font-weight:800; letter-spacing:.2px;
+  color:#111827;
+}
+.ft .ft-desc{ color:var(--muted); margin:8px 0 12px; }
+.ft .ft-desc.small{ font-size:13px; }
+
+/* ---------- Brand card ---------- */
+.ft .ft-logo{
+  display:inline-block;
+  padding:10px 14px;
+  background:var(--chip);
+  border:1px solid var(--border);
+  border-radius:12px;
+  font-size:22px; font-weight:900; letter-spacing:.4px; color:#111827;
+}
+.ft .ft-logo span{ color:var(--accent); }
+
+/* ---------- Contacts (với Boxicons) ---------- */
+.ft .ft-contacts{ list-style:none; padding:0; margin:10px 0 14px; }
+.ft .ft-contacts li{ display:flex; align-items:flex-start; gap:10px; margin:10px 0; color:#1f2937; }
+
+.ft .ft-ico{
+  width:20px; display:inline-flex; align-items:center; justify-content:center;
+  color:var(--accent);
+}
+/* icon Boxicons trong footer */
+.ft .ft-ico .bx{
+  font-size:18px; line-height:1; display:inline-block;
+}
+
+.ft .ft-link{ color:#111827; text-decoration:none; }
+.ft .ft-link:hover{ color:var(--accent); text-decoration:underline; }
+
+/* ---------- Social (nút vuông bo) ---------- */
+.ft .ft-social{ display:flex; gap:10px; margin-top:8px; }
+.ft .ft-social a{
+  width:36px; height:36px; border-radius:10px; display:grid; place-items:center;
+  background:var(--chip); border:1px solid var(--border); color:#111827;
+  transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+  box-shadow:0 6px 16px rgba(15,23,42,.04);
+}
+.ft .ft-social a .bx{ font-size:18px; }
+.ft .ft-social a:hover{
+  transform:translateY(-2px);
+  border-color:#d1d5db;
+  box-shadow:0 10px 20px rgba(15,23,42,.08);
+}
+
+/* ---------- Lists ---------- */
+.ft .ft-list{ list-style:none; padding:0; margin:0; }
+.ft .ft-list li+li{ margin-top:8px; }
+.ft .ft-list a{ color:#1f2937; opacity:.92; text-decoration:none; }
+.ft .ft-list a:hover{ opacity:1; color:var(--accent); text-decoration:underline; }
+
+/* ---------- Newsletter (input hài hòa) ---------- */
+.ft .ft-newsletter{
+  display:flex; gap:8px; margin:10px 0 14px;
+  background:#fff; border:1px solid var(--border);
+  border-radius:12px; padding:6px;
+  box-shadow:0 6px 18px rgba(15,23,42,.04);
+}
+.ft .ft-newsletter input{
+  flex:1; border:none; outline:none; background:transparent; color:#111827;
+  padding:10px 12px; font-size:14px;
+}
+.ft .ft-newsletter input::placeholder{ color:#94a3b8; }
+.ft .ft-newsletter button{
+  border:1px solid #f4c7c7; border-radius:10px;
+  background:#fff5f5; color:#b91c1c; /* đỏ trầm để êm */
+  width:46px; height:40px; font-weight:800;
+  cursor:pointer; display:grid; place-items:center;
+  transition:background .15s ease, transform .1s ease, box-shadow .15s ease, border-color .15s ease;
+}
+.ft .ft-newsletter button:hover{
+  background:#ffe4e4; border-color:#f2b3b3;
+  transform:translateY(-1px);
+  box-shadow:0 8px 18px rgba(185,28,28,.12);
+}
+
+/* ---------- Payments & Badges ---------- */
+.ft .ft-payments{ display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+.ft .pay{
+  display:inline-flex; align-items:center; justify-content:center;
+  min-width:56px; height:30px; padding:0 12px;
+  border-radius:10px; font-size:12px; font-weight:800;
+  background:var(--chip); border:1px solid var(--border); color:#111827;
+}
+.ft .ft-badges{ display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+.ft .badge{
+  display:inline-flex; align-items:center; justify-content:center;
+  padding:8px 12px; border-radius:10px;
+  background:var(--chip); border:1px solid var(--border);
+  color:#111827; font-weight:700; font-size:12px;
+}
+
+/* ---------- Mid chips ---------- */
+.ft .ft-mid{ background:transparent; }
+.ft .ft-mid-grid{
+  max-width:1120px; margin:0 auto; padding:16px; display:flex; flex-wrap:wrap; gap:10px;
+}
+.ft .chip{
+  text-decoration:none; color:#111827; opacity:.96;
+  background:var(--chip); border:1px solid var(--border);
+  padding:8px 14px; border-radius:999px; font-size:13px; font-weight:700;
+  transition:border-color .15s ease, box-shadow .15s ease, transform .1s ease;
+}
+.ft .chip:hover{
+  border-color:#d1d5db; transform:translateY(-1px);
+  box-shadow:0 8px 18px rgba(15,23,42,.06);
+}
+
+/* ---------- Bottom ---------- */
+.ft .ft-bottom{ border-top:1px solid var(--border); }
+.ft .ft-bottom-inner{
+  max-width:1120px; margin:0 auto; padding:12px 16px;
+  display:flex; align-items:center; justify-content:space-between;
+  color:#111827; opacity:.95; font-size:13px;
+}
+.ft .ft-copy{ text-align:right; }
+.ft .ft-license{ color:#4b5563; }
+@media (max-width:640px){
+  .ft .ft-bottom-inner{ flex-direction:column; gap:8px; text-align:center; }
+}
+
+/* ---------- Brand RED variant ---------- */
+.ft.ft--brand-red{
+  --bg-section:#fef2f2;  /* nền hồng rất nhạt để gợi thương hiệu mà không nặng mắt */
+  --panel:#ffffff;
+  --accent:#d70000;
+  --border:#f3d6d6;
+  --chip:#fffdfd;
+}
+.ft.ft--brand-red .ft-top{ border-color:var(--border); }
+.ft.ft--brand-red .ft-newsletter button{
+  border-color:#f1bcbc; background:#fff4f4; color:#bd1d1d;
+}
+.ft.ft--brand-red .ft-social a:hover{ border-color:#efcaca; }
+.ft{
+  /* ... các token khác ... */
+  --footer-h: 260px; /* ước lượng chiều cao footer để Search tính min-height */
+  /* ... phần còn lại giữ nguyên ... */
+}

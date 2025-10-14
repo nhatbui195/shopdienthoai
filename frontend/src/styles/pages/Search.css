@@ -1,0 +1,93 @@
+/* ================= Search.css — compact 60vw ================= */
+/* Tokens cơ bản */
+:root{
+  --header-h: 60px;
+  --radius: 12px;
+  --border: #e5e7eb;
+  --muted: #6b7280;
+  --text:  #0f172a;
+  --bg:    #f6f7fb;
+  --card:  #ffffff;
+  --shadow: 0 10px 24px rgba(15,23,42,.06);
+}
+
+/* Nền trang */
+html, body { background: var(--bg); }
+
+/* Khung Search: chiếm ~60vw, tối đa 1120px, tối thiểu 320px */
+.sr-shell{
+  width: min(60vw, 1120px);
+  min-width: 320px;
+  margin: calc(var(--header-h) + 18px) auto 72px;
+  padding: 0 8px;
+  color: var(--text);
+  animation: sr-fade .24s ease-out;
+  /* chừa chỗ cho footer khi rỗng (đọc --footer-h từ .ft nếu có) */
+  min-height: calc(100vh - var(--header-h) - var(--footer-h, 260px));
+}
+@keyframes sr-fade { from{opacity:0; transform: translateY(4px);} to{opacity:1; transform:none;} }
+
+/* Khi màn nhỏ, cho full width để dễ xem */
+@media (max-width: 900px){
+  .sr-shell{ width: 100%; padding: 0 12px; }
+}
+
+/* Trạng thái rỗng (nếu có) */
+.sr-shell.is-empty{
+  display:flex; align-items:center; justify-content:center;
+}
+.sr-loading{ text-align:center; color:var(--muted); padding:24px 0; }
+
+/* GRID nhỏ gọn: auto-fit để tự co giãn, nhìn đều */
+.sr-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* 180–1fr -> nhỏ gọn */
+  gap: 14px;
+}
+
+/* CARD gọn */
+.sr-card{
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform .14s ease, box-shadow .14s ease, border-color .14s ease;
+}
+.sr-card:hover{ transform: translateY(-1px); box-shadow: var(--shadow); }
+
+/* Ảnh vuông, để tỉ lệ nhỏ để card gọn */
+.sr-thumb{
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: #f8fafc;
+  display: grid; place-items: center;
+}
+.sr-thumb img{
+  max-width: 72%;
+  max-height: 72%;
+  object-fit: contain;
+}
+
+/* Tên & giá nhỏ gọn */
+.sr-name{
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 10px 6px;
+  min-height: 40px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+.sr-price{
+  font-size: 13px;
+  color: #ef4444;
+  padding: 0 10px 10px;
+  font-weight: 700;
+}
+
+/* (Optional) Empty card nếu không dùng Swal */
+.sr-empty-placeholder{ width:100%; height: 120px; }

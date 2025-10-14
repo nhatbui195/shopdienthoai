@@ -1,0 +1,73 @@
+/* ===== Frame ===== */
+.tb-hero { margin-top: 60px; }
+.tb-container { max-width: 1200px; margin: 0 auto; padding: 0 10px; }
+
+/* ===== Bar ===== */
+.tb-bar{
+  display:flex; align-items:center; gap:10px;
+  background:#f3f4f6; border:1px solid #e5e7eb; border-radius:12px;
+  padding:10px 12px; color:#374151;
+  box-shadow:0 1px 2px rgba(0,0,0,.03);
+}
+
+/* Back button */
+.tb-back{
+  border:none; background:transparent; cursor:pointer;
+  display:inline-flex; align-items:center; justify-content:center;
+  color:#2563eb; padding:6px; border-radius:10px;
+}
+.tb-back:hover{ background:#e8eefc; }
+
+/* ===== Scroller: tránh xuống dòng, có mask 2 bên ===== */
+.tb-scroller{
+  position:relative; overflow:hidden; flex:1 1 auto;
+}
+.tb-bc{
+  display:flex; align-items:center;
+  white-space:nowrap; list-style:none; padding:0; margin:0;
+  overflow-x:auto; overflow-y:hidden;
+  scrollbar-width:none;               /* Firefox */
+  -ms-overflow-style:none;            /* IE/Edge */
+  -webkit-overflow-scrolling:touch;   /* iOS */
+}
+.tb-bc::-webkit-scrollbar{ display:none; }
+
+/* Gradient mask nhẹ ở mép hai bên khi có scroll */
+.tb-scroller::before,
+.tb-scroller::after{
+  content:""; position:absolute; top:0; bottom:0; width:14px; pointer-events:none;
+}
+.tb-scroller::before{ left:-1px; background:linear-gradient(90deg,#f3f4f6,rgba(243,244,246,0)); }
+.tb-scroller::after { right:-1px; background:linear-gradient(270deg,#f3f4f6,rgba(243,244,246,0)); }
+
+/* ===== Items & separators (auto bằng CSS) ===== */
+.tb-item{ display:inline-flex; align-items:center; }
+
+/* Tự chèn dấu “/” cho mọi item sau item đầu */
+.tb-item + .tb-item{ position:relative; margin-left:12px; }
+.tb-item + .tb-item::before{
+  content:"/"; color:#9ca3af; font-weight:500; margin-right:12px;
+}
+
+/* ===== Links & current ===== */
+.tb-link{
+  color:#111827; text-decoration:none; font-weight:600;
+  display:inline-flex; align-items:center; gap:6px; min-width:0;
+}
+.tb-link.is-dim{ color:#6b7280; font-weight:500; }
+.tb-link:hover{ text-decoration:underline; }
+
+/* icon trước chữ */
+.tb-ico{ display:inline-flex; margin-right:2px; color:#6b7280; }
+
+.tb-current{
+  color:#111827; font-weight:700; min-width:0;
+  /* Nếu tên quá dài thì ẩn bớt với dấu … */
+  max-width: 50vw; overflow:hidden; text-overflow:ellipsis;
+}
+
+/* Mobile tweaks */
+@media (max-width: 640px){
+  .tb-bar{ padding:8px 10px; border-radius:10px; }
+  .tb-current{ max-width: 60vw; }
+}

@@ -1,0 +1,120 @@
+/* ===== Khung form đăng nhập ===== */
+.login-form {
+  max-width: 400px;
+  margin: 20px auto;
+  padding: 24px;
+  background: #fff;
+  border-radius: 8px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.login-form h2 {
+  text-align: center;
+  font-size: 1.4rem;
+  color: #d70000;
+  margin-bottom: 20px;
+}
+
+/* Label & Input */
+.login-form label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.login-form input {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 14px;
+  border: 1px solid #ccc;     /* viền mảnh, không nổi */
+  border-radius: 4px;
+  font-size: 0.95rem;
+  box-shadow: none;
+  transition: border-color .2s ease;
+}
+
+.login-form input:focus {
+  border-color: #d70000;
+  outline: none;
+}
+
+/* Nút submit */
+.login-form button[type="submit"] {
+  width: 100%;
+  padding: 10px 0;
+  background: #d70000;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background .3s ease;
+}
+.login-form button[type="submit"]:hover {
+  background: #a50000;
+}
+
+/* Thông báo */
+.login-form p {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+/* Dòng gợi ý chuyển sang đăng ký */
+.login-register-note {
+  margin-top: 12px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #555;
+}
+.login-register-note .register-link {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #d70000;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.login-register-note .register-link:hover { text-decoration: underline; }
+/* ===== Toast Mini ===== */
+.toast-mini {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 4px;
+  font-weight: 600;
+  color: #fff;
+  z-index: 9999;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  animation: slideDown 0.3s ease, fadeOut 0.5s ease 3s forwards;
+}
+
+.toast-mini.error {
+  background: #d9534f; /* đỏ */
+}
+.toast-mini.success {
+  background: #5cb85c; /* xanh */
+}
+
+.toast-mini i {
+  font-size: 1.2rem;
+}
+
+/* animation */
+@keyframes slideDown {
+  from {opacity: 0; transform: translate(-50%,-20px);}
+  to   {opacity: 1; transform: translate(-50%,0);}
+}
+@keyframes fadeOut {
+  to {opacity: 0;}
+}

@@ -1,0 +1,386 @@
+/* =======================
+   OrderSheet.css — overlay + panel
+   ======================= */
+
+/* Khóa cuộn nền khi mở sheet */
+body.lock-scroll{
+  overflow: hidden !important;
+  padding-right: var(--sbw, 0px);
+}
+
+/* -------- Overlay tổng -------- */
+.os-overlay{
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: grid;
+  grid-template-rows: 1fr;
+  align-items: end;
+  justify-items: center;
+  pointer-events: none;
+  font-family: Arial, "Helvetica Neue", Helvetica, "Segoe UI", Tahoma, sans-serif;
+}
+
+/* Nền mờ */
+.os-backdrop{
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  animation: osFadeIn .18s ease-out both;
+  pointer-events: auto;
+}
+@keyframes osFadeIn{ from{opacity:0} to{opacity:1} }
+
+/* -------- Panel chính -------- */
+.os-panel{
+  width: min(100%, 1040px);
+  max-height: 92vh;
+  pointer-events: auto;
+  background: #fff;
+  border-radius: 14px 14px 0 0;
+  box-shadow: 0 24px 64px rgba(15,23,42,.28);
+  overflow: hidden;
+  transform: translateY(8px);
+  animation: osSlideUp .22s cubic-bezier(.2,.8,.2,1) both;
+}
+@keyframes osSlideUp{ from{transform:translateY(32px);opacity:.75} to{transform:translateY(0);opacity:1} }
+
+@media (min-width: 992px){
+  .os-overlay{ align-items: center; }
+  .os-panel{ border-radius: 16px; }
+}
+
+/* -------- Header -------- */
+.os-header{
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.os-header h3{ margin:0; font-size:18px; letter-spacing:.2px; color:#0f172a; }
+.os-close{
+  appearance: none; border: 0; background: transparent;
+  width: 36px; height: 36px; border-radius: 10px;
+  font-size: 20px; line-height: 1; cursor: pointer; color:#111827;
+}
+.os-close:hover{ background: rgba(0,0,0,.06); }
+
+/* -------- Body layout -------- */
+.os-body{
+  display: grid;
+  gap: 16px;
+  padding: 16px;
+  background: #fff;
+}
+@media (min-width: 992px){
+  .os-body{
+    grid-template-columns: 1.05fr 1fr; /* trái hơi rộng hơn */
+    gap: 20px;
+    padding: 18px;
+  }
+}
+
+/* ===== Left ===== */
+.os-left{ min-width: 0; }
+
+/* Product box */
+.os-product{
+  display: grid;
+  grid-template-columns: 112px 1fr;
+  gap: 14px;
+  padding: 12px;
+  background: #f9fafb;
+  border: 1px solid #eef2f7;
+  border-radius: 12px;
+  align-items: center;
+}
+.os-product img{
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+}
+.os-product__meta h4{ margin:0 0 6px; font-size:16px; color:#0f172a; }
+.os-variant-line{ color:#334155; font-size:13px; margin-bottom:6px; }
+.os-old{ color:#6b7280; text-decoration:line-through; margin-bottom:2px; height:18px; }
+.os-old--empty{ visibility: hidden; }
+.os-price{ font-size:20px; font-weight:700; color:#dc2626; }
+.os-emi{ font-size:12px; color:#64748b; margin-top:2px; }
+
+/* ===== Variants ===== */
+.os-variants{ margin-top: 12px; }
+
+/* Field spacing (đÃ GỘP, tránh trùng lặp) */
+.os-field{ margin:16px 0; }
+.os-field > label{
+  display:block;
+  font-weight:600;
+  color:#0f172a;
+  margin:0 0 8px;
+}
+/* khoảng cách giữa các control trong 1 field */
+.os-field > * + *{ margin-top:10px; }
+@media (min-width: 720px){
+  .os-field > * + *{ margin-top:12px; }
+}
+
+.os-color-grid, .os-cap-grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+@media (min-width: 540px){
+  .os-color-grid, .os-cap-grid{ grid-template-columns: repeat(3, 1fr); }
+}
+@media (min-width: 992px){
+  .os-cap-grid{ grid-template-columns: repeat(4, 1fr); }
+}
+
+.os-chip{
+  display:grid;
+  grid-template-columns:40px 1fr;
+  align-items:center;
+  gap:8px;
+  text-align:left;
+  border:1px solid #e5e7eb;
+  background:#fff;
+  border-radius:12px;
+  padding:8px;
+  cursor:pointer;
+  transition: box-shadow .15s ease, border-color .15s ease, transform .02s;
+  user-select:none;
+}
+.os-chip:hover{ border-color:#cbd5e1; }
+.os-chip:active{ transform: translateY(1px); }
+.os-chip.active{ border-color:#111827; box-shadow:0 0 0 2px #1118271a; }
+.os-chip img{
+  width:40px; height:40px; object-fit:cover;
+  border-radius:10px; border:1px solid #e5e7eb; background:#fff;
+}
+.os-chip__text>div{ color:#111827; font-size:14px; }
+.os-chip__text>small{ color:#475569; font-size:12px; }
+
+/* ===== Right: form ===== */
+.os-right{ min-width: 0; }
+
+.os-grid-3{
+  display:grid;
+  grid-template-columns: 1fr;
+  gap:10px;
+}
+@media (min-width: 720px){
+  .os-grid-3{ grid-template-columns: 1.2fr .9fr 1fr; }
+}
+
+.os-voucher-row{ display:grid; grid-template-columns:1fr auto; gap:10px; }
+
+/* Hàng lựa chọn */
+.os-radio-row{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:flex-start;
+  gap:12px 18px;
+}
+
+/* Ô radio dạng thẻ */
+.radio{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:12px 16px;
+  min-width:160px;
+  height:56px;
+  border:1px solid #e5e7eb;
+  border-radius:12px;
+  color:#111827;
+  text-align:center;
+  white-space:nowrap;    /* tránh xuống dòng */
+}
+
+/* Icon radio */
+.radio input{
+  width:16px;
+  height:16px;
+  flex:0 0 16px;
+}
+
+/* Text */
+.radio span{
+  line-height:1.2;
+  display:inline-block;
+}
+
+/* Summary */
+.os-summary{
+  display:grid;
+  grid-template-columns: auto 1fr;
+  align-items:center;
+  gap:14px;
+  padding:10px 0;
+  border-top:1px dashed #e5e7eb;
+  border-bottom:1px dashed #e5e7eb;
+  margin:10px 0 12px;
+}
+.os-qty{
+  display:inline-grid;
+  grid-template-columns:32px 56px 32px;
+  align-items:center;
+  border:1px solid #e5e7eb;
+  border-radius:10px;
+  overflow:hidden;
+}
+.os-qty button{ width:32px; height:36px; border:0; background:#f8fafc; cursor:pointer; }
+.os-qty input{ width:56px; height:36px; border:0; outline:none; text-align:center; background:#fff; }
+
+.os-total{ display:flex; align-items:center; justify-content:space-between; }
+.os-total span{ color:#475569; }
+.os-total b{ color:#dc2626; font-weight:800; font-size:18px; }
+
+/* Controls chung */
+.os-right input,
+.os-right select,
+.os-right textarea{
+  width:100%;
+  font:inherit;
+  padding:10px 12px;
+  border:1px solid #e5e7eb;
+  border-radius:10px;
+  outline:none;
+  background:#fff;
+  color:#0f172a;
+}
+.os-right textarea{ resize:vertical; }
+.os-right input:focus,
+.os-right select:focus,
+.os-right textarea:focus{
+  border-color:#111827;
+  box-shadow:0 0 0 2px #1118271a;
+}
+
+/* Buttons */
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  border-radius:12px;
+  border:1px solid transparent;
+  padding:10px 14px;
+  cursor:pointer;
+  font-weight:600;
+  transition: transform .025s ease, box-shadow .15s ease, background .15s ease, color .15s ease;
+}
+.btn.block{ width:100%; }
+.btn:active{ transform: translateY(1px); }
+.btn.danger{ background:#ef4444; color:#fff; border-color:#ef4444; box-shadow:0 8px 24px rgba(239,68,68,.25); }
+.btn.danger:hover{ background:#dc2626; border-color:#dc2626; }
+.btn.outline{ background:#fff; color:#111827; border-color:#e5e7eb; }
+.btn.outline:hover{ border-color:#111827; box-shadow:0 0 0 2px #11182714; }
+
+/* Ngăn tràn ngang */
+.os-body, .os-left, .os-right, .os-panel{ overflow-x: hidden; }
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .os-panel{ animation:none; }
+  .os-backdrop{ animation:none; }
+}
+
+/* SweetAlert cao hơn overlay */
+.swal2-container{ z-index: 12000 !important; }
+/* ==== Fix CTA bị mất chữ khi zoom 110% ==== */
+
+/* Vùng nút hành động: luôn là grid, tránh co bóp */
+.os-actions{
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  min-width: 0;            /* tránh con bị tràn gây clip chữ */
+}
+
+/* Desktop: nếu muốn 2 nút nằm hàng ngang */
+@media (min-width: 992px){
+  .os-actions{
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Nút: chống wrap + đảm bảo chiều cao, tránh clip do sub-pixel */
+.btn{
+  white-space: nowrap;      /* KHÔNG xuống dòng chữ */
+  min-height: 48px;         /* đủ cao để diacritics không bị cắt */
+  line-height: 1.15;        /* an toàn với font VN */
+  -webkit-font-smoothing: antialiased;  /* giảm răng cưa, tránh mờ/mất nét */
+  text-rendering: optimizeLegibility;
+}
+
+/* Nút đỏ CTA: giữ màu chữ rõ ràng */
+.btn.danger{
+  color: #fff;
+  font-size: 15px;          /* nhỉnh 1 chút giúp chống clip khi zoom */
+}
+
+/* Phòng khi container phải co quá hẹp ở 110% */
+.os-right, .os-left{
+  min-width: 0;
+}
+/* ==== Fix khuất CTA khi zoom / màn hình thấp ==== */
+
+/* Panel dùng flex để chia header (cố định) + body (scroll) */
+.os-panel{
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;              /* giữ bo góc; scroll sẽ ở .os-body */
+  max-height: 92vh;
+}
+
+/* Body là scroll-container */
+.os-body{
+  flex: 1 1 auto;
+  min-height: 0;                 /* quan trọng để flex-child co lại (Chrome/Safari) */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 16px;          /* đệm tránh dính đáy khi hết nội dung */
+}
+
+/* Cột phải và trái cho phép co trong vùng scroll */
+.os-left, .os-right{ min-width: 0; }
+
+/* Thanh CTA dính đáy cột phải: luôn nhìn thấy nút */
+.os-actions{
+  position: sticky;
+  bottom: 0;
+  background: #fff;
+  padding-top: 10px;
+  margin-top: 8px;
+  border-top: 1px solid #eef2f7;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+/* Desktop có thể để 2 nút ngang; nếu vẫn hẹp giữ 1 cột */
+@media (min-width: 992px){
+  .os-actions{ grid-template-columns: 1fr 1fr; }
+}
+
+/* Nút tránh wrap chữ & không bị clip khi zoom */
+.btn{
+  white-space: nowrap;
+  min-height: 48px;
+  line-height: 1.15;
+}
+
+/* Tăng trần chiều cao panel chút xíu trên màn hình cao */
+@media (min-height: 800px){
+  .os-panel{ max-height: 94vh; }
+}

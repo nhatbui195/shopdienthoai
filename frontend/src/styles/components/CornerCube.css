@@ -1,0 +1,61 @@
+.hex2-wrap {
+  position: fixed;
+  width: var(--size);
+  height: var(--size);
+  pointer-events: none;
+  z-index: 3;
+  opacity: 0.9;
+  /* blur nhẹ phía sau để hợp với nền */
+  -webkit-mask-image: radial-gradient(transparent 0%, black 35%, black 75%, transparent 100%);
+          mask-image: radial-gradient(transparent 0%, black 35%, black 75%, transparent 100%);
+}
+
+.corner-br { right: var(--offset); bottom: var(--offset); }
+.corner-bl { left:  var(--offset); bottom: var(--offset); }
+.corner-tr { right: var(--offset); top:    var(--offset); }
+.corner-tl { left:  var(--offset); top:    var(--offset); }
+
+.hex2-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+.rotor {
+  transform-origin: 50% 50%;
+  animation: hex-spin var(--speed) linear infinite;
+}
+
+@keyframes hex-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* nét vẽ */
+.hx {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.stroke-outer { stroke-width: 1.8; }
+.stroke-mid   { stroke-width: 1.2; }
+.stroke-thin  { stroke-width: 0.9; }
+.stroke-hair  { stroke-width: 0.6; }
+
+/* màu & độ trong từ props */
+.hx,
+.stroke-hair {
+  stroke: var(--stroke);
+  opacity: var(--alpha);
+}
+
+/* phản chiếu nhẹ ở nền tối cho cảm giác “premium” */
+.hex2-wrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(60% 60% at 50% 50%,
+              rgba(255,255,255,0.03), transparent 60%);
+  filter: blur(2px);
+}

@@ -1,0 +1,35 @@
+/* Khung trang */
+.om-wrap { display: grid; gap: 16px; }
+.om-card {
+  background:#fff; padding:16px; border-radius:12px;
+  box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
+
+/* Bảng */
+.om-table { width:100%; border-collapse: collapse; background:#fff; }
+.om-table thead tr { background:#f3f4f6; }
+.om-table th, .om-table td { text-align:left; padding:10px 12px; }
+.om-table tbody tr { border-top:1px solid #e5e7eb; }
+
+/* Hành động */
+.om-actions { display:flex; gap:8px; flex-wrap:wrap; align-items:center }
+
+/* Nút */
+.om-btn { padding:6px 12px; border-radius:8px; cursor:pointer; border:1px solid #e5e7eb; background:#fff; }
+.om-btn--success { background:#10b981; color:#fff; border:none; }  /* xanh lục */
+.om-btn--danger  { background:#ef4444; color:#fff; border:none; }  /* đỏ */
+.om-btn--warn    { background:#f59e0b; color:#111827; border:none; } /* vàng */
+.om-btn--primary { background:#4f46e5; color:#fff; border:none; }  /* xanh tím */
+
+/* Input trạng thái */
+.om-input { padding:6px 8px; border-radius:6px; border:1px solid #e5e7eb; min-width: 180px; }
+
+/* Badge trạng thái */
+.om-badge {
+  display:inline-block; padding:4px 10px; border-radius:999px;
+  font-size:12px; line-height:1; font-weight:600;
+}
+.om-badge--muted   { background:#e5e7eb; color:#111827; } /* chờ xác nhận */
+.om-badge--success { background:#dcfce7; color:#166534; } /* đã xác nhận */
+.om-badge--danger  { background:#fee2e2; color:#991b1b; } /* đã hủy */
+.om-badge--warn    { background:#fef3c7; color:#92400e; } /* đơn lỗi, v.v. */

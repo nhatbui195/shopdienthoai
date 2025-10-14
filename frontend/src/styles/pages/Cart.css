@@ -1,0 +1,163 @@
+/* ================= Cart.css ================= */
+:root{
+  --card:#fff;
+  --bg:#f6f7fb;
+  --text:#0f172a;
+  --muted:#6b7280;
+  --border:#e5e7eb;
+  --primary:#111827;
+  --danger:#ef4444;
+  --accent:#2563eb;
+  --shadow:0 10px 24px rgba(15,23,42,.06);
+}
+
+*{ box-sizing:border-box; }
+html,body{ background:var(--bg); }
+
+/* ===== Page Shell ===== */
+.cart{
+  max-width:1100px;
+  margin:24px auto 48px;
+  padding:0 16px;
+  color:var(--text);
+}
+.cart__title{
+  margin:10px 0 18px;
+  font-size:24px;
+  font-weight:700;
+  color:#fff; /* tiêu đề trắng như UI */
+}
+.muted{ color:var(--border); font-weight:500; }
+
+/* ===== Card-like blocks ===== */
+.cart-empty,
+.cart__table,
+.cart__summary{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  box-shadow:var(--shadow);
+}
+
+/* ===== Empty State ===== */
+.cart-empty{ padding:40px 24px; text-align:center; }
+.cart-empty__title{ font-size:20px; font-weight:600; margin-bottom:8px; }
+.cart-empty__desc{ color:var(--muted); margin-bottom:18px; }
+.cart-empty .btn{
+  display:inline-block; padding:10px 16px; border-radius:10px;
+  background:var(--primary); color:#fff; text-decoration:none;
+  transition:transform .2s, box-shadow .2s, opacity .2s;
+}
+.cart-empty .btn:hover{ transform:translateY(-1px); box-shadow:var(--shadow); }
+.cart-empty .btn:active{ transform:none; opacity:.9; }
+
+/* ===== Grid (table + summary) ===== */
+.cart__grid{ display:grid; grid-template-columns:1fr 330px; gap:16px; }
+@media (max-width:920px){ .cart__grid{ grid-template-columns:1fr; } }
+
+/* ===== Table ===== */
+.cart__table{ overflow:hidden; }
+.cart__thead{
+  display:grid; grid-template-columns:1fr 140px 160px 56px; gap:12px;
+  padding:14px 16px; font-weight:600; background:#f9fafb; border-bottom:1px solid var(--border);
+}
+@media (max-width:640px){ .cart__thead{ display:none; } }
+
+.cart__tbody{ display:grid; }
+.cart__row{
+  display:grid; grid-template-columns:1fr 140px 160px 56px; gap:12px;
+  align-items:center; padding:14px 16px; border-bottom:1px solid var(--border); background:#fff;
+  animation:slideIn .25s ease;
+}
+.cart__row:last-child{ border-bottom:none; }
+@media (max-width:640px){ .cart__row{ grid-template-columns:1fr; gap:10px; } }
+
+/* ===== Product Cell ===== */
+.cart__prod{
+  display:grid; grid-template-columns:72px 1fr; gap:12px; align-items:center;
+}
+.cart__thumb{
+  width:72px; height:72px; object-fit:cover;
+  border:1px solid var(--border); border-radius:10px; background:#fff;
+}
+.cart__meta{ min-width:0; }
+.cart__name{ font-weight:600; line-height:1.3; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.cart__variant{ color:var(--muted); font-size:13px; margin:2px 0 6px; }
+.cart__line-total{ font-size:13px; }
+
+/* ===== Price Cell ===== */
+.cart__price{ font-weight:600; text-align:right; }
+@media (max-width:640px){ .cart__price{ text-align:left; } }
+
+/* ===== Qty Cell ===== */
+.cart__qty{
+  display:inline-flex; align-items:center; gap:6px; justify-self:start;
+  border:1px solid var(--border); border-radius:999px; padding:4px; background:#fff;
+}
+.qty-btn{
+  width:28px; height:28px; border:none; border-radius:50%;
+  background:#f3f4f6; font-weight:600; cursor:pointer;
+  transition:transform .15s, background .15s;
+}
+.qty-btn:hover{ transform:translateY(-1px); background:#e5e7eb; }
+.qty-input{ width:44px; border:none; text-align:center; font-weight:600; outline:none; }
+
+/* ===== Remove Cell ===== */
+.cart__remove{ text-align:right; }
+.icon-btn{
+  width:28px; height:28px; border-radius:8px; border:1px solid var(--border); background:#fff; cursor:pointer;
+  transition:background .15s, color .15s, transform .15s;
+}
+.icon-btn:hover{ background:#fee2e2; color:var(--danger); transform:translateY(-1px); }
+
+/* ===== Footer ===== */
+.cart__footer{
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:12px 16px; background:#fafafa; border-top:1px solid var(--border);
+}
+
+/* ===== Buttons ===== */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  padding:10px 14px; border-radius:10px; border:1px solid transparent; cursor:pointer; font-weight:600;
+  transition:transform .15s, box-shadow .15s, background .15s, color .15s;
+}
+.btn--outline{ background:#fff; border-color:var(--border); color:var(--text); }
+.btn--outline:hover{ box-shadow:var(--shadow); }
+.btn--primary{ background:var(--accent); color:#fff; }
+.btn--primary:hover{ box-shadow:var(--shadow); transform:translateY(-1px); }
+.btn--dark{ background:var(--primary); color:#fff; }
+.danger{ color:var(--danger); border-color:#fecaca; }
+
+/* ===== Summary ===== */
+.cart__summary{ position:sticky; top:16px; height:fit-content; padding:16px; }
+.summary__title{ font-size:15px; font-weight:700; margin-bottom:10px; }
+.summary__row{ display:flex; align-items:center; justify-content:space-between; padding:8px 0; }
+.summary__divider{ border:none; border-top:1px dashed var(--border); margin:8px 0 12px; }
+.summary__total{ display:flex; align-items:center; justify-content:space-between; font-size:18px; font-weight:800; margin-bottom:12px; }
+.summary__cta{ width:100%; padding:12px 14px; border-radius:12px; }
+
+/* checkout button đỏ, không hiệu ứng */
+.summary__cta.btn.btn--primary{
+  background:var(--danger); color:#fff; transition:none;
+}
+.summary__cta.btn.btn--primary:hover,
+.summary__cta.btn.btn--primary:active,
+.summary__cta.btn.btn--primary:focus{
+  background:var(--danger); box-shadow:none; transform:none; outline:none;
+}
+
+/* ===== Animations ===== */
+@keyframes slideIn{ 0%{ transform:translateY(8px); opacity:0; } 100%{ transform:none; opacity:1; } }
+@keyframes flashNew{
+  0%{ background:#ecfeff; } 30%{ background:#dbeafe; } 60%{ background:#ecfeff; } 100%{ background:#fff; }
+}
+.cart__tbody .cart__row:first-child{
+  position:relative; animation:flashNew 1.6s ease-out 0s 1; z-index:0;
+  box-shadow:inset 0 0 0 1px rgba(37,99,235,.15);
+}
+.cart__tbody .cart__row:first-child .cart__thumb{ box-shadow:0 0 0 2px rgba(37,99,235,.25); }
+
+/* ===== Links ===== */
+.link{ color:var(--accent); text-decoration:none; }
+.link:hover{ text-decoration:underline; }

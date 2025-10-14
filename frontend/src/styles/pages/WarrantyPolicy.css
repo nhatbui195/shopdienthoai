@@ -1,0 +1,202 @@
+/* =============================
+   Warranty Policy – clean header (no background)
+   ============================= */
+
+/* Tokens */
+.wp-wrap{
+  --site-header-height:72px;
+  --maxw:1100px;
+  --radius:14px;
+  --shadow:0 8px 24px rgba(0,0,0,.06);
+
+  --bg:#f6f7fb;
+  --card:#fff;
+  --text:#111827;
+  --muted:#4b5563;
+
+  --brand:#e11d48;       /* đỏ thương hiệu (dùng cho link) */
+  --border:#e5e7eb;
+}
+
+.wp-wrap{
+  background:var(--bg);
+  color:var(--text);
+  min-height:100%;
+  margin: 150px 0px 0px 0px;
+}
+
+/* ======= HEADER phẳng, không nền ======= */
+.page-hero{
+  background:transparent !important;                /* bỏ nền đỏ */
+  padding-top:calc(var(--site-header-height) + 16px);
+  padding-bottom:0;
+}
+.page-hero .container{
+  width:100%;
+  max-width:var(--maxw);
+  margin:0 auto;
+  padding:0 16px;
+}
+
+
+
+/* Title + Subtitle (không card) */
+.page-head{
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  border-radius:0 !important;
+  padding:0 !important;
+  margin:0 0 8px 0 !important;
+  text-align:left;
+}
+.page-title{
+  margin:0;
+  font-size:clamp(22px,2.4vw,30px);
+  line-height:1.25;
+}
+.page-subtitle{
+  margin:6px 0 0;
+  color:var(--muted);
+  line-height:1.6;
+  font-size:14.5px;
+}
+/* ===== Breadcrumb – spacing & separator (final override) ===== */
+
+/* Bỏ nền/bo góc nếu nơi khác đang áp */
+.breadcrumb-bar{
+  display:flex;
+  align-items:center;
+  flex-wrap:nowrap;
+  white-space:nowrap;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  border-radius:0 !important;
+  padding:0 !important;
+  gap: 0 !important;
+  width: 600px;
+}
+
+/* Ẩn dấu “/” trong DOM nếu có */
+.bc-sep{ display:none !important; }
+
+/* Mỗi item từ item thứ 2 trở đi tự chèn “/” với khoảng đệm */
+.breadcrumb-bar > * + *{
+  position: relative;
+  margin-left: 10px;        /* đệm trước item */
+}
+.breadcrumb-bar > * + *::before{
+  content: "/";
+  color: #9aa3af;           /* xám nhẹ */
+  margin-right: 10px;       /* đệm sau dấu “/” */
+  font-weight: 500;
+}
+
+/* Tất cả item đều không wrap & không width cứng */
+.bc-link, .bc-dim, .bc-current{
+  display:inline-flex;
+  align-items:center;
+  white-space:nowrap;
+  width:auto !important;
+  width: 200px;
+}
+
+/* Icon cách chữ 6px */
+.bc-link .ico, .breadcrumb-bar > .ico{ margin-right:6px; }
+
+/* Màu & trạng thái */
+.bc-link{
+  text-decoration:none;
+  color:var(--text);
+  font-weight:600;
+}
+.bc-link:hover{ color:var(--brand); }
+.bc-dim{ color:#6b7280; font-weight:500; }
+.bc-current{ color:#0f172a; font-weight:700; }
+
+
+
+/* Ẩn đường cong hero cũ */
+.hero-curve{ display:none !important; }
+
+
+/* ======= Nội dung ======= */
+.wp-section{
+  width:100%;
+  max-width:var(--maxw);
+  margin:16px auto 0;
+  padding:24px;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+}
+.wp-section h2{ font-size:clamp(18px,2.1vw,22px); margin:0 0 12px; }
+.wp-section h3{ font-size:18px; margin:20px 0 10px; }
+.wp-section h4{ font-size:16px; margin:18px 0 8px; }
+.wp-section p{ margin:10px 0; color:var(--muted); line-height:1.7; }
+
+/* TOC & Lists */
+.wp-toc{ margin:10px 0 0; padding-left:18px; line-height:1.6; }
+.wp-toc li{ margin:4px 0; }
+.wp-list{ padding-left:20px; margin:10px 0; line-height:1.7; }
+.wp-list li{ margin:6px 0; }
+.wp-list ul{ margin-top:6px; }
+
+/* Bảng dạng thẻ (Grid) */
+.wp-table{ display:grid; gap:8px; margin:14px 0; }
+.wp-tr{
+  display:grid;
+  grid-template-columns:1.1fr 1fr 1.2fr;   /* 3 cột mặc định */
+  gap:12px;
+  padding:14px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:#fff;
+}
+.wp-tr>div{ font-size:14px; line-height:1.6; color:var(--muted); }
+.wp-tr--head{ background:#f9fafb; border-color:#e5e7eb; font-weight:600; }
+.wp-tr--head>div{ color:var(--text); }
+.wp-tr>div:first-child{ color:var(--text); font-weight:600; }
+
+/* Links */
+.wp-wrap a{ color:var(--brand); }
+
+/* ======= Responsive ======= */
+@media (max-width:1024px){
+  .wp-section{ padding:20px; }
+}
+@media (max-width:900px){
+  .wp-tr{ grid-template-columns:1fr; }
+  .wp-tr--head{ display:none; }
+  .wp-tr>div+div{
+    border-top:1px dashed var(--border);
+    padding-top:10px;
+    margin-top:8px;
+  }
+}
+@media (max-width:480px){
+  .wp-section{ padding:18px; }
+}
+
+/* ======= Print ======= */
+@media print{
+  .page-hero{ padding:0; }
+  .page-head,.wp-section{
+    box-shadow:none;
+    border:1px solid #ddd;
+  }
+}
+
+/* ======= Dark mode ======= */
+@media (prefers-color-scheme: dark){
+  .wp-wrap{
+    --bg:#0b0f19;
+    --card:#0f1629;
+    --text:#e5e7eb;
+    --muted:#cbd5e1;
+    --border:#1f2937;
+  }
+  .wp-tr{ background:var(--card); }
+}

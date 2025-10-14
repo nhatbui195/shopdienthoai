@@ -1,0 +1,44 @@
+/* ===== Toast Mini ===== */
+.toast-mini {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 4px;
+  font-weight: 600;
+  color: #fff;
+  z-index: 9999;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  animation: slideDown 0.3s ease;
+  overflow: hidden;           /* để progress bám đáy */
+}
+
+.toast-mini.error { background: #d9534f; }
+.toast-mini.success { background: #5cb85c; }
+
+.toast-mini i { font-size: 1.2rem; }
+
+/* progress line */
+.toast-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  background: rgba(255,255,255,0.8);
+  width: 0%;
+  animation: progressBar 3s linear forwards;
+}
+
+@keyframes progressBar {
+  from { width: 0%; }
+  to   { width: 100%; }
+}
+
+@keyframes slideDown {
+  from {opacity: 0; transform: translate(-50%,-20px);}
+  to   {opacity: 1; transform: translate(-50%,0);}
+}

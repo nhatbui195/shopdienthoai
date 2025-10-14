@@ -1,0 +1,64 @@
+/* ===== Base ===== */
+.crumb{
+  --crumb-w: 1080px;
+  --crumb-bg: #f3f4f6;   /* nền trắng xám nhạt */
+  --crumb-fg: #111827;
+
+  max-width: var(--crumb-w);
+  margin: 0 auto;
+  padding: 5px 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--crumb-bg);   /* HỘP TRẮNG */
+  border-radius: 12px;
+  color: var(--crumb-fg);
+  box-shadow: 0 1px 0 rgba(0,0,0,.04), 0 1px 8px rgba(0,0,0,.06);
+}
+
+.crumb__left{
+  border: 0;
+  background: transparent;       /* bỏ nền đỏ */
+  color: inherit;
+  padding: 6px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.crumb__left i{ font-size: 20px; line-height: 1; }
+
+.crumb__list{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 14px;
+  background: transparent;       /* bỏ nền đỏ */
+}
+
+/* chữ/link */
+.crumb__sep{ color: #9ca3af; margin: 0 4px; }
+.crumb__link{ color: var(--crumb-fg); text-decoration: none; }
+.crumb__link:hover{ text-decoration: underline; }
+.crumb__text{ color: var(--crumb-fg); }
+.is-dim{ color: #9ca3af; }
+.is-strong{ font-weight: 600; }
+
+/* ===== Biến thể chui vào nền đỏ ===== */
+.crumb-docked{
+  --crumb-w: 1100px;      /* có thể override theo trang */
+  --dock-offset: 75px;    /* kéo lên bao nhiêu px */
+
+  position: relative;
+  z-index: 60;            /* nổi trên nền đỏ */
+  transform: translateY(calc(-1 * var(--dock-offset)));
+  margin: -50px auto 14px;
+}
+
+/* mobile */
+@media (max-width: 640px){
+  .crumb{ border-radius: 10px; padding: 8px 10px; }
+  .crumb-docked{ --crumb-w: 92vw; --dock-offset: 48px; }
+}

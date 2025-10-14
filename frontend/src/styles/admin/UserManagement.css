@@ -1,0 +1,31 @@
+/* Khung trang */
+.um-wrap { display: grid; gap: 16px; }
+.um-card {
+  background:#fff; padding:16px; border-radius:12px;
+  box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
+
+/* Bảng */
+.um-table { width:100%; border-collapse: collapse; background:#fff; }
+.um-table thead tr { background:#f3f4f6; }
+.um-table th, .um-table td { text-align:left; padding:10px 12px; }
+.um-table tbody tr { border-top:1px solid #e5e7eb; }
+
+/* Hành động */
+.um-actions { display:flex; gap:8px; flex-wrap:wrap; }
+
+/* Nút */
+.um-btn { padding:6px 12px; border-radius:8px; cursor:pointer; border:1px solid #e5e7eb; background:#fff; }
+.um-btn--danger { background:#ef4444; color:#fff; border:none; }
+.um-btn--muted  { color:#6b7280; }
+
+/* Badge vai trò */
+.um-badge {
+  display:inline-block; padding:4px 10px; border-radius:999px;
+  font-size:12px; line-height:1; font-weight:600;
+}
+.um-badge--staff { background:#dbeafe; color:#1e3a8a; }   /* NhanVien */
+.um-badge--user  { background:#e5e7eb; color:#111827; }   /* KhachHang */
+
+/* Header hàng */
+.um-header { margin:0 0 8px; font-weight:700; }

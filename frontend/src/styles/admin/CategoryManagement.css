@@ -1,0 +1,129 @@
+.cat-card {
+  background: var(--card-bg, #fff);
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+.cat-card__header {
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.cat-card__body {
+  padding: 16px 20px 20px;
+}
+
+/* form */
+.cat-form {
+  display: grid;
+  grid-template-columns: 140px 1fr auto auto;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.cat-form__label {
+  font-weight: 600;
+  color: #111827;
+}
+
+.cat-tools {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+/* inputs & buttons */
+.cat-input {
+  height: 38px;
+  padding: 0 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  outline: none;
+  width: 100%;
+  background: #fff;
+}
+
+.cat-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.cat-btn {
+  height: 38px;
+  padding: 0 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #f8fafc;
+  cursor: pointer;
+}
+
+.cat-btn--primary {
+  background: #2563eb;
+  color: #fff;
+  border-color: #2563eb;
+}
+
+.cat-btn--danger {
+  background: #ef4444;
+  color: #fff;
+  border-color: #ef4444;
+}
+
+.cat-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* table */
+.cat-table__wrap {
+  overflow: auto;
+  border: 1px solid #eef2f7;
+  border-radius: 10px;
+}
+
+.cat-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  background: #fff;
+}
+
+.cat-table th,
+.cat-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.cat-table thead th {
+  background: #f8fafc;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* misc */
+.cat-muted {
+  color: #6b7280;
+  padding: 12px 0;
+}
+
+.cat-alert {
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+}
+
+.cat-alert--error {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+/* responsive */
+@media (max-width: 760px) {
+  .cat-form {
+    grid-template-columns: 1fr;
+  }
+}

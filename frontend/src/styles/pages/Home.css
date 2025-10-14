@@ -1,0 +1,181 @@
+/* =================== Reset & Base =================== */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --container-w:1200px;
+  --text:#333; --muted:#777; --border:#e5e7eb;
+  --shadow:0 4px 14px rgba(0,0,0,.1);
+  --brand:#d0021b;
+}
+body{color:var(--text);font-family:Arial,Helvetica,sans-serif;background:#f9f9f9}
+
+/* =================== Layout: 3 cột bằng nhau =================== */
+.container{
+  display:grid; grid-template-columns:1fr 3fr 1fr; gap:20px;
+  align-items:stretch; max-width:var(--container-w); margin:80px auto;
+  position:relative; z-index:2;
+}
+.left-side,.center-side,.right-side{display:flex; flex-direction:column; height:100%}
+.center-side{align-items:center}
+
+/* ===== Left menu: kín đáy, viền gọn ===== */
+.left-side{
+  background:#fff; border-radius:10px; padding:12px;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+.left-side ul{list-style:none; display:flex; flex-direction:column; height:100%}
+.left-side ul li{
+  display:flex; justify-content:space-between; align-items:center;
+  padding:12px 10px; border-bottom:1px solid #eee; transition:.25s;
+  cursor:pointer;
+}
+.left-side ul li:last-child{border-bottom:0}
+.left-side ul li:hover{background:#f7f7f7; transform:translateX(5px)}
+.left-side .hot{color:#e53935; font-size:12px}
+
+/* =================== HERO = Slider + Tabs CHUNG 1 KHỐI =================== */
+.hero{
+  width:100%; display:flex; flex-direction:column; gap:0;
+  border-radius:12px; overflow:hidden; background:#fff; box-shadow:var(--shadow);
+  margin-bottom:10px;             /* tách khỏi banner ngang phía dưới */
+}
+
+/* ===== Slider ===== */
+.slider-container{position:relative; width:100%; overflow:hidden; background:#fff}
+.slider-track{display:flex; transition:transform .5s ease}
+.slider-track img{width:100%; flex-shrink:0; object-fit:cover; aspect-ratio:16/9}
+
+.slider-container button{
+  position:absolute; top:50%; transform:translateY(-50%);
+  width:36px; height:36px; border:none; border-radius:50%;
+  background:rgba(0,0,0,.45); color:#fff; font-size:20px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; transition:background .3s;
+}
+.slider-container button:hover{background:rgba(0,0,0,.7)}
+.slider-container button:first-of-type{left:10px}
+.slider-container button:last-of-type{right:10px}
+
+/* Dots */
+.slider-dots{
+  position:absolute; left:0; right:0; bottom:10px;
+  display:flex; gap:8px; justify-content:center;
+}
+.slider-dots .dot{
+  width:8px; height:8px; border-radius:999px;
+  background:rgba(0,0,0,.25); border:1px solid rgba(255,255,255,.7);
+  cursor:pointer; transition:transform .15s, background .15s, border-color .15s;
+}
+.slider-dots .dot:hover{transform:scale(1.1)}
+.slider-dots .dot.active{background:#fff; border-color:#fff}
+
+/* ===== Deal tabs: dính ngay dưới ảnh, 5 cột ===== */
+.deal-tabs{
+  display:grid; grid-template-columns:repeat(5,1fr);
+  width:100%; background:#fff; border-top:1px solid var(--border);
+}
+.deal-tab{
+  position:relative; display:flex; align-items:center; justify-content:center; text-align:center;
+  min-height:64px; padding:12px 10px; background:#fff; color:#1f2937;
+  user-select:none; cursor:pointer;
+  transition:background .2s, color .2s, transform .06s;
+  border:none;
+}
+.deal-tab:last-child{border-right:0}
+.deal-tab:hover{background:#f9fafb}
+.deal-tab:active{transform:translateY(1px)}
+
+/* Viền đỏ ở TOP bung từ giữa khi active */
+.deal-tab::after{
+  content:""; position:absolute; top:0; left:50%; width:100%; height:3px;
+  background:linear-gradient(90deg,#ef4444,#dc2626); border-radius:999px 999px 0 0;
+  transform:translateX(-50%) scaleX(0); transform-origin:50% 50%; transition:transform .28s ease;
+}
+.deal-tab.active{color:#111827}
+.deal-tab.active::after, .deal-tab:focus-visible::after{transform:translateX(-50%) scaleX(1)}
+
+/* =================== Banner nhỏ dưới hero =================== */
+.small-image-block{width:100%; height:80px; border-radius:10px; overflow:hidden; margin-top:6px}
+.small-image-block img{width:100%; height:100%; object-fit:cover}
+
+/* =================== Right column banners: 3 ảnh chia đều =================== */
+.right-side .image-block{display:flex; flex-direction:column; gap:12px; height:100%}
+.right-side .image-block img{
+  flex:1; min-height:0; width:100%; object-fit:cover;
+  border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,.07);
+}
+
+/* =================== Product Grid & Card =================== */
+.product-list-grid{
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:16px; padding:16px; max-width:var(--container-w); margin:0 auto;
+}
+.product-list-grid.wide{max-width:var(--container-w)}
+
+.product-item{
+  background:#fff; border:1px solid #eee; border-radius:12px;
+  position:relative; overflow:hidden; font-size:13px;
+  transition:transform .2s, box-shadow .2s; box-shadow:0 2px 6px rgba(0,0,0,.04);
+}
+.product-item:hover{transform:translateY(-5px); box-shadow:0 8px 20px rgba(0,0,0,.1)}
+.product-item img{width:100%; height:180px; object-fit:cover; display:block}
+.product-item h3{
+  font-size:14px; margin:6px 8px 4px; color:#333; line-height:1.35;
+  display:-webkit-box; -webkit-line-clamp:2; line-clamp:2; -webkit-box-orient:vertical;
+  overflow:hidden; min-height:38px;
+}
+.product-item .price{display:flex; align-items:center; margin:0 8px 3px; font-size:13px; color:var(--brand); font-weight:700}
+.product-item .old-price{font-size:11px; color:#999; text-decoration:line-through; margin-left:5px}
+.product-item .rating{display:flex; align-items:center; margin:0 8px 5px; font-size:13px; color:#f5a623}
+.product-item .star{margin-right:1px}
+.product-item .rating-count{font-size:11px; color:#666; margin-left:4px}
+.product-item .edu-vip-row{display:flex; gap:6px; flex-wrap:wrap; margin:4px 8px 10px; color:#444; font-size:12px}
+.installment-badge{position:absolute; top:6px; right:6px; background:#ff9800; color:#fff; padding:1px 5px; font-size:10px; border-radius:4px}
+.product-item a{text-decoration:none; color:inherit; display:block}
+
+/* =================== Group Section =================== */
+.group-section{position:relative; max-width:var(--container-w); margin:28px auto}
+.group-body{padding-top:18px}
+.group-tag{
+  position:absolute; top:-14px; left:10px; padding:8px 18px; border-radius:999px;
+  border:1px solid rgba(0,0,0,.18); background:linear-gradient(90deg,#000,#3a3a3a);
+  color:#fff; font-weight:800; letter-spacing:.4px; font-size:13px; text-transform:uppercase;
+  box-shadow:0 4px 10px rgba(0,0,0,.15), inset 0 1px 0 rgba(255,255,255,.08)
+}
+.group-footer{display:flex; gap:10px; justify-content:center; margin:8px 0 0}
+.group-more,.group-viewall{
+  border:1px solid var(--border); background:#fff; padding:8px 14px; border-radius:8px;
+  cursor:pointer; font-weight:600;
+}
+.group-more:hover,.group-viewall:hover{background:#f3f4f6}
+
+/* =================== Category Button Bar =================== */
+.category-bar{display:flex; flex-wrap:wrap; gap:8px; width:100%; margin:8px 0 0}
+.category-chip{
+  padding:8px 14px; border-radius:999px; border:1px solid var(--border); background:#fff;
+  cursor:pointer; font-weight:700; font-size:13px; color:#111;
+  transition:background .15s, transform .05s, box-shadow .15s, border-color .15s;
+}
+.category-chip:hover{background:#f3f4f6}
+.category-chip:active{transform:translateY(1px)}
+
+/* =================== Footer Slogan =================== */
+.container3{
+  max-width:var(--container-w); margin:50px auto; background:#fff; border-radius:10px;
+  padding:20px; text-align:center; font-size:20px; color:#555; box-shadow:0 4px 12px rgba(0,0,0,.1)
+}
+
+/* =================== Responsive =================== */
+@media (max-width:900px){
+  .container{grid-template-columns:1fr}
+  .group-tag{position:static; margin-bottom:8px; display:inline-flex}
+  .group-body{padding-top:0}
+  /* cột phải về ảnh cao cố định để tránh “kéo” trang */
+  .right-side .image-block img{flex:0 0 auto; height:180px}
+}
+@media (max-width:992px){
+  .deal-tabs{grid-template-columns:repeat(3,1fr)}
+}
+@media (max-width:640px){
+  .deal-tabs{grid-template-columns:repeat(2,1fr); gap:8px; border-top:0; padding:8px}
+  .deal-tab{min-height:60px; border-right:0; border:1px solid var(--border); border-radius:12px}
+}
+.slider-img--clickable { cursor: pointer; }

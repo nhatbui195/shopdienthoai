@@ -1,0 +1,253 @@
+/* ================= Page base ================= */
+.bts-wrap{
+  --content-w: 1080px;
+  --block-h: 450px;
+  --radius: 16px;
+  --gap: 16px;
+
+  --bg:#FFF7EE;
+  --card:#fff;
+  --text:#111827;
+  --sub:#6b7280;
+  --danger:#d0021b;
+
+  background: var(--bg);
+  min-height: 100vh;
+  padding-bottom: 32px;
+  margin: 202px 0 0 0; /* đẩy nội dung xuống dưới phần header đỏ */
+}
+
+/* ================= Banners (top/cta/title) ================= */
+/* Bỏ nền trắng/đổ bóng xung quanh, bật will-change để mượt hơn */
+.bts-hero,
+.bts-cta img,
+.bts-title img{
+  width: 100%;
+  max-width: var(--content-w);
+  height: var(--block-h);
+  margin: 10px auto;
+  display: block;
+  border-radius: var(--radius);
+  object-position: center;
+  box-shadow: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  will-change: transform, opacity, filter;
+}
+.bts-hero{ object-fit: cover; }
+.bts-cta img, .bts-title img{ object-fit: contain; }
+
+/* ================= Category tiles (8 ô ảnh cam) ================= */
+.bts-tiles{
+  max-width: var(--content-w);
+  margin: 12px auto 6px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--gap);
+}
+.bts-tile{
+  display: block;
+  border-radius: 14px;
+  overflow: hidden;
+  background: transparent !important;
+  box-shadow: none !important;
+  transition: transform .18s ease, box-shadow .18s ease;
+  will-change: transform;
+}
+.bts-tile:hover{
+  transform: translateY(-3px) scale(1.015);
+  box-shadow: 0 10px 24px rgba(0,0,0,.12);
+}
+.bts-tile:active{
+  transform: translateY(-1px) scale(0.995);
+}
+.bts-tile-full{
+  width: 100%;
+  height: 200px;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  display: block;
+}
+
+/* ================= Sections & strips ================= */
+.bts-section{
+  max-width: var(--content-w);
+  margin: 16px auto 6px;
+}
+.bts-strip{
+  width: 100%;
+  display: block;
+  margin-bottom: 8px;
+  border-radius: var(--radius);
+  will-change: transform, opacity, filter;
+}
+
+/* ================= Product grid & cards ================= */
+.product-list-grid.wide,
+.bts-grid{
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+}
+
+.bts-card{
+  text-decoration:none;
+  background:var(--card);
+  border-radius:16px;
+  padding:12px;
+  box-shadow:0 1px 8px rgba(0,0,0,.06);
+  color:var(--text);
+  transition:transform .12s ease, box-shadow .12s ease;
+  display:flex; flex-direction:column; align-items:center;
+}
+.bts-card:hover{ transform: translateY(-2px); box-shadow:0 10px 20px rgba(0,0,0,.12); }
+.bts-thumb{ width:100%; height:160px; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+.bts-thumb img{ max-width:92%; max-height:100%; object-fit:contain; }
+.bts-name{
+  width:100%; margin:8px 0 4px; line-height:1.35; font-weight:600; text-align:center;
+  display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; line-clamp:2; overflow:hidden; /* thêm line-clamp chuẩn để hết cảnh báo */
+}
+.bts-price{ font-weight:800; color:var(--danger); }
+
+/* ================= Breadcrumb dock (hộp trắng trong nền đỏ) ================= */
+.bts-crumb{
+  --crumb-w: var(--content-w);
+  --dock-offset: 110px;
+  z-index: 60; /* bảo đảm phủ lên vòng cung đỏ */
+  position: relative;
+}
+
+/* ================= Accessibility & Motion ================= */
+.bts-tile:focus-visible,
+.bts-card:focus-visible{ outline:3px solid rgba(255,122,0,.45); outline-offset:2px; }
+@media (prefers-reduced-motion: reduce){
+  .bts-tile, .bts-card{ transition:none; }
+}
+
+/* ================= Responsive ================= */
+@media (max-width: 1100px){
+  .product-list-grid.wide, .bts-grid{ grid-template-columns: repeat(4, 1fr); }
+}
+@media (max-width: 900px){
+  .bts-wrap{ --block-h: 220px; --content-w: 92vw; }
+  .bts-tiles{ grid-template-columns: repeat(2, 1fr); }
+  .product-list-grid.wide, .bts-grid{ grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 600px){
+  .bts-wrap{ --block-h: 190px; }
+  .product-list-grid.wide, .bts-grid{ grid-template-columns: repeat(2, 1fr); }
+  .bts-thumb{ height: 140px; }
+}
+
+/* =================================================================== */
+/* =====================  ANIMATION BỔ SUNG  ========================= */
+/* =================================================================== */
+
+/* Click: rung nhẹ */
+@keyframes btsWiggle{
+  0%,100% { transform: translateY(0) rotate(0) scale(1); }
+  20%     { transform: translateY(-1px) rotate(-1.2deg) scale(1.02); }
+  40%     { transform: translateY(1px)  rotate( 1.2deg); }
+  60%     { transform: translateY(-.5px) rotate(-.8deg); }
+  80%     { transform: translateY(.5px)  rotate( .8deg); }
+}
+.bts-tile.wiggle{ animation: btsWiggle .45s ease-in-out; }
+
+/* Các tile khác trôi dạt */
+@keyframes btsAsideL{
+  0%   { transform: translateX(0);    opacity: 1; }
+  50%  { transform: translateX(-12px); opacity: .96; }
+  100% { transform: translateX(0);    opacity: 1; }
+}
+@keyframes btsAsideR{
+  0%   { transform: translateX(0);    opacity: 1; }
+  50%  { transform: translateX(12px);  opacity: .96; }
+  100% { transform: translateX(0);    opacity: 1; }
+}
+.bts-tile.shift-left  { animation: btsAsideL .45s ease; }
+.bts-tile.shift-right { animation: btsAsideR .45s ease; }
+
+/* Mobile dịu hơn */
+@media (max-width: 640px){
+  @keyframes btsAsideL{ 50%{ transform: translateX(-8px); opacity:.97; } }
+  @keyframes btsAsideR{ 50%{ transform: translateX( 8px); opacity:.97; } }
+}
+
+/* ===== Scroll-reveal base (dành cho ảnh clickbuy; điều khiển bằng JSX) ===== */
+.reveal{
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity .6s cubic-bezier(.2,.7,.2,1),
+              transform .6s cubic-bezier(.2,.7,.2,1),
+              filter .6s cubic-bezier(.2,.7,.2,1);
+  transition-delay: var(--delay, 0ms); /* cho phép set delay từ JSX */
+  will-change: opacity, transform, filter;
+  filter: saturate(.95) contrast(.98);
+}
+.reveal-in{
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+
+/* Hướng xuất hiện */
+.reveal-up{ transform: translateY(20px) scale(.98); }
+.reveal-left{ transform: translateX(-28px); }
+.reveal-right{ transform: translateX(28px); }
+
+/* Hero zoom-in nhẹ */
+.reveal-zoom{
+  transform: scale(1.03);
+}
+.reveal-zoom.reveal-in{
+  transform: scale(1);
+}
+
+/* Mobile dịu hơn */
+@media (max-width: 640px){
+  .reveal-left{ transform: translateX(-18px); }
+  .reveal-right{ transform: translateX(18px); }
+  .reveal-up{ transform: translateY(14px) scale(.99); }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .reveal, .reveal-up, .reveal-left, .reveal-right, .reveal-zoom{
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+    filter: none !important;
+  }
+  .bts-tile.wiggle,
+  .bts-tile.shift-left,
+  .bts-tile.shift-right{
+    animation: none !important;
+  }
+}
+/* --- Reveal đã có trong file cũ (reveal / reveal-in / reveal-left|right|up / reveal-zoom) --- */
+/* Cho phép truyền delay theo biến --delay (tiles dùng cái này) */
+.reveal { transition-delay: var(--delay, 0ms); }
+
+/* --- Click effect cho ảnh nguồn clickbuy --- */
+.cb-clickable{
+  cursor: pointer;
+  display: block;
+  position: relative;
+  transform-origin: center;
+  transition: transform .18s ease, filter .18s ease;
+}
+.cb-clickable:hover{
+  filter: saturate(1.02) contrast(1.02);
+  transform: translateY(-1px);
+}
+
+/* nhấn (được toggle bằng JS) */
+@keyframes cbPulse {
+  0%   { transform: scale(1);   }
+  50%  { transform: scale(.985);}
+  100% { transform: scale(1);   }
+}
+.cb-pressed{ animation: cbPulse .35s ease; }
+
+/* (phần wiggle/shift-left/shift-right của tiles và keyframes btsWiggle/btsAsideL/R
+   vẫn giữ như file trước của anh) */

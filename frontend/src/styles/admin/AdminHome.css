@@ -1,0 +1,77 @@
+.mh{display:grid;gap:18px}
+
+/* Tiles KPI trên cùng */
+.mh-kpi{display:grid;grid-template-columns:repeat(4,minmax(220px,1fr));gap:18px}
+.tile{display:grid;grid-template-columns:54px 1fr;gap:12px;background:#fff;border-radius:14px;padding:16px;box-shadow:0 8px 24px rgba(2,6,23,.08)}
+.tile-icon{width:54px;height:54px;border-radius:12px;display:grid;place-items:center;font-size:22px;color:#fff}
+.tile-meta{display:grid;gap:6px}
+.tile-title{font-size:13px;color:#6b7280}
+.tile-value{font-size:22px;font-weight:800;color:#0f172a}
+.tile-sub{font-size:12px;color:#6b7280}
+.tile--orange .tile-icon{background:#f59e0b}
+.tile--green .tile-icon{background:#10b981}
+.tile--red .tile-icon{background:#ef4444}
+.tile--blue .tile-icon{background:#3b82f6}
+
+/* Lưới widget */
+.mh-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:18px;
+  align-items:stretch;
+  grid-auto-flow:dense; /* lấp các khoảng trống */
+}
+.card{
+  background:#fff;border-radius:14px;padding:16px;
+  box-shadow:0 8px 24px rgba(2,6,23,.08);
+  display:flex;flex-direction:column;gap:10px;height:100%;
+}
+.card.orange{background:#fb923c;color:#fff}
+.card-title{font-weight:700}
+.card.orange .white{color:#fff}
+.card-note{font-size:12px;color:#6b7280}
+.card.orange .card-note{color:#fee2e2}
+.span-2{grid-column:span 2}
+.span-full{grid-column:1 / -1} /* FULL hàng để lấp góc dưới phải */
+
+/* Tabs + todo (pill gọn gàng) */
+.tabs{display:flex;flex-wrap:wrap;gap:12px;padding:4px 4px 8px}
+.tag{
+  background:#f1f5f9;color:#475569;font-size:14px;
+  padding:10px 14px;border-radius:9999px;
+  border:1px solid #e5e7eb;min-height:36px;
+  display:inline-flex;align-items:center;justify-content:center;
+  transition:all .2s ease;user-select:none;cursor:pointer;
+}
+.tag:hover{transform:translateY(-1px)}
+.tag.blue{background:#4f46e5;color:#fff;border-color:#4f46e5;box-shadow:0 6px 20px rgba(79,70,229,.25)}
+.todo{display:grid;gap:10px;padding-left:0;list-style:none;margin-top:4px}
+.todo li{display:flex;gap:10px;align-items:center}
+.todo .done{ text-decoration:line-through; opacity:.65 }
+
+/* Nút link nhỏ */
+.btn-link{
+  background:none;border:none;padding:0 6px;margin-left:8px;
+  color:#2563eb;cursor:pointer;text-decoration:underline;
+}
+.btn-link:hover{opacity:.85}
+
+/* mini table */
+.mini{width:100%;border-collapse:collapse;background:transparent}
+.mini th,.mini td{padding:12px 10px;text-align:left;border-bottom:1px solid rgba(255,255,255,.25)}
+.mini thead th{font-size:12px;opacity:.9}
+
+/* Click effect */
+.clickable{cursor:pointer;transition:transform .06s ease}
+.clickable:active{transform:scale(.98)}
+
+/* Responsive */
+@media (max-width:1280px){
+  .mh-kpi{grid-template-columns:repeat(2,1fr)}
+  .mh-grid{grid-template-columns:1fr 1fr}
+  .span-2,.span-full{grid-column:1 / -1}
+}
+@media (max-width:768px){
+  .mh-kpi{grid-template-columns:1fr}
+  .mh-grid{grid-template-columns:1fr}
+}
