@@ -1,13 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   LineChart, Line, PieChart, Pie, Cell, Legend
 } from "recharts";
 import { useNavigate } from "react-router-dom";
+import { http } from "../lib/api";           // ⬅️ dùng client chung
 import "../styles/admin/AdminHome.css";
-
-const API = "http://localhost:3001";
 
 export default function AdminHome() {
   const navigate = useNavigate();
@@ -45,7 +43,7 @@ export default function AdminHome() {
     (async () => {
       try {
         // Doanh thu theo tháng
-        const rev = await axios.get(`${API}/api/admin/thongke/doanhthu`);
+        const rev = await http.get("/api/admin/thongke/doanhthu");
         const rdata = (rev.data || []).map(r => ({
           month: r.Thang,
           revenue: Number(r.DoanhThu || 0)
@@ -54,21 +52,21 @@ export default function AdminHome() {
         const totalRevenue12M = rdata.reduce((s, i) => s + i.revenue, 0);
 
         // Số tài khoản theo vai trò
-        const acc = await axios.get(`${API}/api/admin/thongke/taikhoan`);
+        const acc = await http.get("/api/admin/thongke/taikhoan");
         const totalUsers = acc.data?.find(x => x.VaiTro === "KhachHang")?.SoLuong || 0;
         const totalStaff = acc.data?.find(x => x.VaiTro === "NhanVien")?.SoLuong || 0;
 
         // Đơn chờ
-        const wait = await axios.get(`${API}/api/admin/thongke/doncho`);
+        const wait = await http.get("/api/admin/thongke/doncho");
         const waitingOrders = Number(wait.data?.DonHangChoXacNhan || 0);
 
         // Sản phẩm (để vẽ pie)
-        const productsRes = await axios.get(`${API}/api/products`);
+        const productsRes = await http.get("/api/products");
         const prodList = (productsRes.data || []);
         const totalProducts = prodList.length;
         setProducts(prodList);
 
-        // Bán ra theo ngày (demo) — tránh biến unused
+        // Bán ra theo ngày (demo)
         const pts = [];
         for (let i = 0; i < 7; i++) {
           pts.push({
@@ -141,7 +139,6 @@ export default function AdminHome() {
 
   const PIE_COLORS = ["#0ea5e9", "#22c55e", "#f97316", "#ef4444", "#8b5cf6", "#14b8a6", "#64748b"];
 
-  // Nội dung tabs
   const tabContent = useMemo(() => {
     switch (activeTab) {
       case "work":
@@ -294,7 +291,7 @@ export default function AdminHome() {
           <div className="card-note">Tự động phân loại theo tên sản phẩm (iPhone/Apple, Samsung, Xiaomi, ...).</div>
         </div>
 
-        {/* Việc cần làm (tabs chuẩn pill) */}
+        {/* Việc cần làm */}
         <div className="card span-2">
           <div className="tabs">
             <span className={`tag ${activeTab === "work" ? "blue" : ""}`} onClick={() => setActiveTab("work")}>CÔNG VIỆC</span>
@@ -322,7 +319,7 @@ export default function AdminHome() {
           </ul>
         </div>
 
-        {/* Top nhân viên: span-full để lấp khoảng trống dưới góc phải */}
+        {/* Top nhân viên */}
         <div className="card span-full orange">
           <div className="card-title white">Top nhân viên theo doanh thu</div>
           <table className="mini">
