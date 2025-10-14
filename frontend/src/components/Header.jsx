@@ -3,10 +3,11 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import "../styles/components/Header.css";
 import AuthModal from "./AuthModal";
+import { api, fileURL } from "../lib/api"; // ✅ dùng client & helper ảnh
 
-const API = "http://localhost:3001";
-
-function readUser() { try { return JSON.parse(localStorage.getItem("user")); } catch { return null; } }
+function readUser() {
+  try { return JSON.parse(localStorage.getItem("user")); } catch { return null; }
+}
 function getUsername(u) {
   return (u?.username || u?.tenDangNhap || u?.TenDangNhap || u?.name || u?.fullname || u?.email || "");
 }
@@ -31,25 +32,23 @@ export default function Header() {
   const inputRef = useRef(null);
   const debounceRef = useRef(null);
 
-  // Đặt vị trí panel (fixed) ngay dưới ô input
   // Đặt vị trí panel (fixed) ngay dưới ô input – WIDTH ~500px
-const positionPanel = useCallback(() => {
-  const el = inputRef.current;
-  if (!el) return;
-  const r = el.getBoundingClientRect();
+  const positionPanel = useCallback(() => {
+    const el = inputRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
 
-  const PANEL_W = Math.min(500, window.innerWidth - 16); // 500px, trừ mép 8px mỗi bên
-  // căn trái theo ô input, nhưng không tràn khỏi màn hình
-  const left = Math.max(8, Math.min(r.left, window.innerWidth - PANEL_W - 8));
+    const PANEL_W = Math.min(500, window.innerWidth - 16);
+    const left = Math.max(8, Math.min(r.left, window.innerWidth - PANEL_W - 8));
 
-  setPanelStyle({
-    position: "fixed",
-    top: r.bottom + 8,
-    left,
-    width: PANEL_W,          // << cố định ~500px
-    zIndex: 6500,            // nổi trên overlay
-  });
-}, []);
+    setPanelStyle({
+      position: "fixed",
+      top: r.bottom + 8,
+      left,
+      width: PANEL_W,
+      zIndex: 6500,
+    });
+  }, []);
 
   useLayoutEffect(() => { if (openSuggest) positionPanel(); }, [openSuggest, positionPanel]);
   useEffect(() => {
@@ -64,24 +63,20 @@ const positionPanel = useCallback(() => {
 
   // Khóa cuộn body khi overlay mở
   useEffect(() => {
-    if (openSuggest) {
-      document.body.classList.add("body-modal-open");
-    } else {
-      document.body.classList.remove("body-modal-open");
-    }
+    if (openSuggest) document.body.classList.add("body-modal-open");
+    else document.body.classList.remove("body-modal-open");
     return () => document.body.classList.remove("body-modal-open");
   }, [openSuggest]);
 
-  // API gợi ý (debounce)
+  // API gợi ý (debounce + axios client)
   const fetchSuggest = useCallback(async (text) => {
     if (!text) { setSuggestions([]); return; }
     try {
-      const url = `${API}/api/suggestions?keyword=${encodeURIComponent(text)}`;
-      const res = await fetch(url, { credentials: "include" });
-      if (res.ok) {
-        const data = await res.json();
-        setSuggestions(Array.isArray(data) ? data : []);
-      }
+      const { data } = await api.get("/api/suggestions", {
+        params: { keyword: text },
+        withCredentials: true,
+      });
+      setSuggestions(Array.isArray(data) ? data : []);
     } catch (err) {
       if (import.meta.env?.DEV) console.debug("suggestions error:", err);
     }
@@ -95,11 +90,16 @@ const positionPanel = useCallback(() => {
     debounceRef.current = setTimeout(() => fetchSuggest(v.trim()), 200);
   };
 
+  // ✅ dọn timer khi unmount
+  useEffect(() => {
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
+  }, []);
+
   const submitSearch = useCallback(() => {
     const key = kw.trim();
     if (!key) return;
     setOpenSuggest(false);
-    navigate(`/search?keyword=${encodeURIComponent(key)}`); // sang trang kết quả
+    navigate(`/search?keyword=${encodeURIComponent(key)}`);
   }, [kw, navigate]);
 
   const onKeyDownSearch = (e) => {
@@ -118,7 +118,10 @@ const positionPanel = useCallback(() => {
     const onStorage = (e) => { if (e.key === "user" || e.key === "token") refreshUser(); };
     window.addEventListener("auth-changed", onAuth);
     window.addEventListener("storage", onStorage);
-    return () => { window.removeEventListener("auth-changed", onAuth); window.removeEventListener("storage", onStorage); };
+    return () => {
+      window.removeEventListener("auth-changed", onAuth);
+      window.removeEventListener("storage", onStorage);
+    };
   }, [refreshUser]);
 
   useEffect(() => { refreshUser(); setOpenSuggest(false); }, [location.pathname, refreshUser]);
@@ -130,7 +133,10 @@ const positionPanel = useCallback(() => {
     const onEsc = (e) => { if (e.key === "Escape") { setOpenAccount(false); setOpenSuggest(false); } };
     document.addEventListener("mousedown", onClickOutside);
     document.addEventListener("keydown", onEsc);
-    return () => { document.removeEventListener("mousedown", onClickOutside); document.removeEventListener("keydown", onEsc); };
+    return () => {
+      document.removeEventListener("mousedown", onClickOutside);
+      document.removeEventListener("keydown", onEsc);
+    };
   }, [openAccount]);
 
   const handleAccountClick = () => { if (!user) { setShowLogin(true); return; } setOpenAccount((v) => !v); };
@@ -152,8 +158,10 @@ const positionPanel = useCallback(() => {
 
   const handleLogout = async () => {
     const result = await Swal.fire({
-      title: "Đăng xuất?", html: "Bạn có chắc chắn muốn đăng xuất?",
-      icon: undefined, iconHtml: '<i class="bx bx-error"></i>',
+      title: "Đăng xuất?",
+      html: "Bạn có chắc chắn muốn đăng xuất?",
+      icon: undefined,
+      iconHtml: '<i class="bx bx-error"></i>',
       customClass: { icon: "swal2-phone-icon", confirmButton: "swal2-btn-confirm", cancelButton: "swal2-btn-cancel" },
       showCancelButton: true, confirmButtonText: "Đăng xuất", cancelButtonText: "Hủy", reverseButtons: true, focusCancel: true,
     });
@@ -248,8 +256,14 @@ const positionPanel = useCallback(() => {
 
           {suggestions.length > 0 ? (
             suggestions.map((s) => (
-              <div key={s.IDSanPham} className="hdr-sg-item" onClick={() => selectSuggest(s)} title={s.TenSanPham}>
-                <img src={s.AnhDaiDien} alt={s.TenSanPham} />
+              <div
+                key={s.IDSanPham}
+                className="hdr-sg-item"
+                onClick={() => selectSuggest(s)}
+                title={s.TenSanPham}
+              >
+                {/* ✅ ảnh an toàn đường dẫn */}
+                <img src={fileURL(s.AnhDaiDien)} alt={s.TenSanPham} />
                 <span className="name">{s.TenSanPham}</span>
               </div>
             ))
