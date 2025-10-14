@@ -30,7 +30,7 @@ const corsOptions = {
   methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
 };
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
+
 
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
