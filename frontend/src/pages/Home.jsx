@@ -6,17 +6,15 @@ import React, {
   useState,
   useCallback,
 } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import SidebarMenu from "../components/SidebarMenu";
 import "../styles/pages/Home.css";
-
-const API = "http://localhost:3001";
+import { api, fileURL } from "../lib/api";
 
 /* ================= Helpers ================= */
 // CHANGED: bỏ random để key/link ổn định
 const getId = (p) => p?.MaSanPham ?? p?.id ?? p?.ID ?? null;
-const safeImage = (src) => (src && src.startsWith("http") ? src : `${API}${src || ""}`);
+const safeImage = (src) => fileURL(src);
 const stripDiacritics = (s = "") =>
   s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 const pickBrand = (p) =>
@@ -77,8 +75,8 @@ export default function Home() {
   /* ================= Fetch products ================= */
   useEffect(() => {
     const ctrl = new AbortController();
-    axios
-      .get(`${API}/api/products`, { signal: ctrl.signal })
+    api
+      .get("/api/products", { signal: ctrl.signal })
       .then((res) => setProducts(res.data || []))
       .catch((err) => {
         if (err.name !== "CanceledError") console.error("Lỗi tải sản phẩm:", err);
@@ -141,11 +139,11 @@ export default function Home() {
     ],
     []
   );
-const RIGHT_BANNERS = [
-  { id: 29, src: "https://clickbuy.com.vn/uploads/media/676-vqobu.png", alt: "QC 1" },
-  { id: 45, src: "https://clickbuy.com.vn/uploads/media/671-sKdOs.png", alt: "QC 2" },
-  { id: 69, src: "https://clickbuy.com.vn/uploads/media/678-GGcvA.jpg",  alt: "QC 3" },
-];
+  const RIGHT_BANNERS = [
+    { id: 29, src: "https://clickbuy.com.vn/uploads/media/676-vqobu.png", alt: "QC 1" },
+    { id: 45, src: "https://clickbuy.com.vn/uploads/media/671-sKdOs.png", alt: "QC 2" },
+    { id: 69, src: "https://clickbuy.com.vn/uploads/media/678-GGcvA.jpg",  alt: "QC 3" },
+  ];
 
   const goProduct = (id) => navigate(`/product/${id}`);
   const relevanceScore = useCallback((p, g) => {
@@ -167,10 +165,10 @@ const RIGHT_BANNERS = [
     return score;
   }, []);
   const SMALL_BANNER = {
-  id: 24,
-  src: "https://clickbuy.com.vn/uploads/media/657-ydoyn.png",
-  alt: "Quảng cáo",
-};
+    id: 24,
+    src: "https://clickbuy.com.vn/uploads/media/657-ydoyn.png",
+    alt: "Quảng cáo",
+  };
 
   const matchGroup = useCallback((p, g) => {
     const brandRaw = pickBrand(p);
@@ -222,11 +220,10 @@ const RIGHT_BANNERS = [
   const renderItem = (p) => {
     const id = getId(p);
     if (!id) return null;
-    const img = safeImage(p.HinhAnhList?.[0] || p.HinhAnh);
+    const img = safeImage(p?.HinhAnhList?.[0] || p?.HinhAnh);
     const price = getPrice(p);
 
     const goDetail = () => navigate(`/product/${id}`);
-    
 
     return (
       <article
@@ -238,15 +235,15 @@ const RIGHT_BANNERS = [
         onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && goDetail()}
         aria-label={`Xem chi tiết ${p?.TenSanPham || "sản phẩm"}`}
       >
-        {p.TraGop && <div className="installment-badge">{p.TraGop}</div>}
+        {p?.TraGop && <div className="installment-badge">{p.TraGop}</div>}
 
         <div className="product-clickable">
-          <img src={img} alt={p.TenSanPham || "Sản phẩm"} loading="lazy" />
-          <h3 title={p.TenSanPham}>{p.TenSanPham}</h3>
+          <img src={img} alt={p?.TenSanPham || "Sản phẩm"} loading="lazy" />
+          <h3 title={p?.TenSanPham}>{p?.TenSanPham}</h3>
 
           <div className="price">
             {price.toLocaleString("vi-VN")} đ
-            {p.GiaCu && (
+            {p?.GiaCu && (
               <span className="old-price">
                 {Number(p.GiaCu).toLocaleString("vi-VN")} đ
               </span>
@@ -256,17 +253,17 @@ const RIGHT_BANNERS = [
           <div className="rating">
             {Array.from({ length: 5 }, (_, i) => (
               <span key={i} className="star">
-                {i < Math.round(Number(p.SoSao || 0)) ? "★" : "☆"}
+                {i < Math.round(Number(p?.SoSao || 0)) ? "★" : "☆"}
               </span>
             ))}
-            <span className="rating-count">({Number(p.SoDanhGia || 0)})</span>
+            <span className="rating-count">({Number(p?.SoDanhGia || 0)})</span>
           </div>
 
           <div className="edu-vip-row">
-            {p.GiaEdu && (
+            {p?.GiaEdu && (
               <div className="edu">Ưu đãi Edu: {Number(p.GiaEdu).toLocaleString("vi-VN")} đ</div>
             )}
-            {p.GiaVip && (
+            {p?.GiaVip && (
               <div className="vip">Khách thân thiết: {Number(p.GiaVip).toLocaleString("vi-VN")} đ</div>
             )}
           </div>
@@ -339,38 +336,39 @@ const RIGHT_BANNERS = [
             </div>
           </div>
 
-        <div className="small-image-block">
-          <img
-            src={SMALL_BANNER.src}
-            alt={SMALL_BANNER.alt}
-            loading="lazy"
-            role="button"
-            tabIndex={0}
-            onClick={() => goProduct(SMALL_BANNER.id)}
-            onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && goProduct(SMALL_BANNER.id)}
-            style={{ cursor: "pointer" }}
-            title="Xem chi tiết sản phẩm"
-          />
+          <div className="small-image-block">
+            <img
+              src={SMALL_BANNER.src}
+              alt={SMALL_BANNER.alt}
+              loading="lazy"
+              role="button"
+              tabIndex={0}
+              onClick={() => goProduct(SMALL_BANNER.id)}
+              onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && goProduct(SMALL_BANNER.id)}
+              style={{ cursor: "pointer" }}
+              title="Xem chi tiết sản phẩm"
+            />
+          </div>
         </div>
+
+        <div className="right-side">
+          <div className="image-block">
+            {RIGHT_BANNERS.map(b => (
+              <img
+                key={b.id}
+                src={b.src}
+                alt={b.alt}
+                loading="lazy"
+                role="button"
+                tabIndex={0}
+                onClick={() => goProduct(b.id)}
+                onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && goProduct(b.id)}
+                style={{ cursor: "pointer" }}
+                title="Xem chi tiết sản phẩm"
+              />
+            ))}
+          </div>
         </div>
-<div className="right-side">
-  <div className="image-block">
-    {RIGHT_BANNERS.map(b => (
-      <img
-        key={b.id}
-        src={b.src}
-        alt={b.alt}
-        loading="lazy"
-        role="button"
-        tabIndex={0}
-        onClick={() => goProduct(b.id)}
-        onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && goProduct(b.id)}
-        style={{ cursor: "pointer" }}
-        title="Xem chi tiết sản phẩm"
-      />
-    ))}
-  </div>
-</div>
       </div>
 
       {/* ===== GROUP SECTIONS ===== */}
@@ -432,8 +430,7 @@ const RIGHT_BANNERS = [
           </div>
         </section>
       )}
-
-     
     </>
   );
 }
+
