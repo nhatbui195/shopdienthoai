@@ -1,5 +1,4 @@
-// ── Phần đầu index.js (READY cho Render/Vercel) ───────────────────────────────
-require('dotenv').config();
+// ── Phần đầu index.js (sạch, thay thế trực tiếp) ──────────────────────────────
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
@@ -8,60 +7,63 @@ const path = require('path');
 const bcrypt = require('bcryptjs');
 const cron = require('node-cron');
 
+
 const app = express();
+const PORT = 3001;
 
-// ✅ PORT lấy từ ENV (Render/Railway cung cấp), fallback 3001 khi chạy local
-const PORT = Number(process.env.PORT || 3001);
-
-// ===== CORS: thêm domain Vercel của anh =====
+/* ===== CORS with credentials (DEV whitelist) ===== */
 const whitelist = [
-  'http://localhost:5173',
-  'http://127.0.0.1:5173',
-  'https://shopdienthoai.vercel.app' // <-- đổi đúng domain Vercel của anh nếu khác
+  "http://localhost:5173",
+  "https://shopdienthoai-nhat.vercel.app"
 ];
+app.use(cors({
+  origin: whitelist,
+  credentials: true
+}));
+
 const corsOptions = {
   origin(origin, cb) {
+    // Cho phép Postman/cURL (origin null) + 2 origin dev
     if (!origin || whitelist.includes(origin)) return cb(null, true);
     return cb(new Error('Not allowed by CORS'));
   },
-  credentials: true,
+  credentials: true,        // cho phép gửi cookie/authorization
   methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
+  // KHÔNG set allowedHeaders -> cors tự phản chiếu Access-Control-Request-Headers
+  // exposedHeaders có thể thêm khi cần đọc header phản hồi đặc biệt (vd: set-cookie)
 };
+
 app.use(cors(corsOptions));
 app.use(express.json());
-
-// Static uploads (demo dùng local; production nên chuyển S3/Cloudinary)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// ===== MySQL: dùng Pool + ENV (bắt buộc khi lên cloud) =====
-const db = mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASS || '',
-  database: process.env.DB_NAME || 'shopdienthoai',
-  port: Number(process.env.DB_PORT || 3306),
-  // Nhiều nhà cung cấp DB yêu cầu SSL:
-  ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : undefined,
+/* ===== MySQL Connection ===== */
+const db = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: '',            // chỉnh nếu cần
+  database: 'shopdienthoai'
 });
 const dbp = db.promise();
 
-// Ping thử để log dễ debug
-db.query('SELECT 1', (err) => {
+
+db.connect(err => {
   if (err) {
-    console.error('❌ Không thể kết nối DB:', err?.message || err);
-  } else {
-    console.log('✅ Đã kết nối MySQL (pool)');
+    console.error('❌ Không thể kết nối DB:', err);
+    process.exit(1);
   }
+  console.log('✅ Đã kết nối MySQL');
 });
 
-// ===== Multer (local disk) =====
+/* ===== Multer setup ===== */
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, 'uploads'),
-  filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
+  filename: (req, file, cb) => {
+    const uniqueName = Date.now() + path.extname(file.originalname);
+    cb(null, uniqueName);
+  }
 });
 const upload = multer({ storage });
-// ─────────────────────────────────────────────────────────────────────────────
-
 // ───────────────────────────────────────────────────────────────────────────────
 
 /* ================================
@@ -1217,7 +1219,8 @@ app.put('/api/products/:id/extended', (req, res) => {
 
 
 
-app.get('/', (req, res) => res.send('API is running'));
-app.listen(PORT, () => console.log(`🚀 Server on :${PORT}`));
+app.listen(PORT, () => {
+  console.log(`🚀 Server đang chạy tại http://localhost:${PORT}`);
+});
 
 // Backend (index.js)
