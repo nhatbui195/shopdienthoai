@@ -1,3 +1,4 @@
+// src/pages/StoreLocator.jsx
 import React, { useMemo, useState } from "react";
 import "../styles/pages/StoreLocator.css";
 import Swal from "sweetalert2";
@@ -18,10 +19,7 @@ const RAW_STORES = [
       },
       { addr: "TTBH Hà Nội 1: Tầng 2, 111 Trần Đăng Ninh, Cầu Giấy" },
       { addr: "TTBH Hà Nội 2: Tầng 2, 375 Cầu Giấy, Hà Nội" },
-      {
-        addr:
-          "Ngã 3 Đồng Yên, Yên Phong, Bắc Ninh (KCN Yên Phong)",
-      },
+      { addr: "Ngã 3 Đồng Yên, Yên Phong, Bắc Ninh (KCN Yên Phong)" },
       { addr: "269 Nguyễn Hữu Tiến, TT Đồng Văn, Duy Tiên, Hà Nam" },
       { addr: "380 Trần Phú, Ba Đình, Thanh Hóa" },
     ],
@@ -61,11 +59,10 @@ function hashCode(str) {
 
 // Tạo số ĐT Việt Nam 10 chữ số với đầu số phổ biến (03/07/08/09)
 function makeVNPhone(addr) {
-  const heads = ["032", "033", "034", "035", "036", "037", "038", "039", "070", "079", "081", "082", "083", "084", "085", "086", "088", "089", "090", "091", "096", "097", "098"];
+  const heads = ["032","033","034","035","036","037","038","039","070","079","081","082","083","084","085","086","088","089","090","091","096","097","098"];
   const h = hashCode(addr);
   const head = heads[h % heads.length];
   const tail = String((h % 10_000_000) + 10_000_000).slice(1); // 7 digits
-  // Format kiểu 09xx.xxx.xxx
   return `${head}.${tail.slice(0,3)}.${tail.slice(3)}`;
 }
 
