@@ -204,7 +204,6 @@ export default function ProductManagement() {
     setForm(f => ({ ...f, HinhAnhList: f.HinhAnhList.filter((_, i) => i !== idx) }));
   };
 
-  const imgUrl = (src) => (src?.startsWith("http") ? src : `${API}${src}`);
   const imgUrl = (src) => safeImage(src);
 
   // ✅ mở modal Thông số
