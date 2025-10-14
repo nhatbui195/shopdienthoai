@@ -1,14 +1,7 @@
 import React from "react";
 import "../styles/components/BreadcrumbBar.css";
 
-/**
- * BreadcrumbBar (tái sử dụng)
- * props:
- * - segments: [{ label, href?, icon?, dim?, strong? }]
- * - leftIcon: class icon bên trái (mặc định "bx bx-menu-alt-left")
- * - onLeftClick: handler khi click icon trái
- * - className, style: tuỳ biến thêm (ví dụ: "crumb-docked" để chui vào nền đỏ như ô input)
- */
+
 export default function BreadcrumbBar({
   segments = [],
   leftIcon = "bx bx-menu-alt-left",
