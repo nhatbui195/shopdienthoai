@@ -1,4 +1,4 @@
-// ── Phần đầu index.js (sạch, thay thế trực tiếp) ──────────────────────────────
+
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
@@ -1238,6 +1238,5 @@ app.put('/api/products/:id/extended', (req, res) => {
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log('API listening on ' + PORT));
 
-module.exports = app;
 
 // Backend (index.js)
