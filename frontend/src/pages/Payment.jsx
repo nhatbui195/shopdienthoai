@@ -1,12 +1,13 @@
 // src/pages/PaymentPage.jsx
 import React, { useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import axios from "axios";
+// import axios from "axios";
 import Swal from "sweetalert2";
 import "../styles/pages/Payment.css";
 import { clearCart } from "../utils/cart"; // ✅ xóa giỏ sau khi thanh toán
+import { api } from "../lib/api";          // ✅ dùng axios instance chung
 
-const API = "http://localhost:3001";
+// const API = "http://localhost:3001";
 
 const BANK = {
   code: "mbbank",                 // slug VietQR
@@ -48,7 +49,6 @@ export default function PaymentPage() {
     try {
       await navigator.clipboard.writeText(text);
     } catch (err) {
-      // có trình duyệt chặn clipboard — bỏ qua
       void err;
     }
     Swal.fire({
@@ -90,7 +90,7 @@ export default function PaymentPage() {
         setSubmitting(true);
 
         // 1) Lưu record thanh toán (bảng payments)
-        await axios.post(`${API}/api/payments`, {
+        await api.post(`/api/payments`, {
           MaDonHang: Number(orderId),
           SoTien: amount,
           NoiDungCK: info,
@@ -99,7 +99,7 @@ export default function PaymentPage() {
         });
 
         // 2) Cập nhật đơn sang shipping + paid (tuỳ backend, giữ một route gọn)
-        await axios.put(`${API}/api/donhang/mark-shipping/${orderId}`, {
+        await api.put(`/api/donhang/mark-shipping/${orderId}`, {
           ShippingStatus: "shipping",
           PaymentStatus: method === "cod" ? "unpaid" : "paid",
           PaymentMethod: method === "cod" ? "cod" : "bank",
