@@ -1,11 +1,10 @@
 // src/pages/MyOrders.jsx
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import Swal from "sweetalert2";
 import "../styles/pages/MyOrders.css";
+import { api } from "../lib/api"; // ✅ dùng client chung
 
-const API = "http://localhost:3001";
 const fmtVND = (n) =>
   (Number(n) || 0).toLocaleString("vi-VN", { style: "currency", currency: "VND" });
 
@@ -119,7 +118,7 @@ export default function MyOrders() {
     setBusy(true);
     try {
       // 1) lấy danh sách đơn
-      const res = await axios.get(`${API}/api/donhang/${maKhachHang}`);
+      const res = await api.get(`/api/donhang/${maKhachHang}`);
       const list = Array.isArray(res.data) ? res.data : [];
 
       // 2) enrich payments -> ưu tiên PaymentStatus từ donhang
@@ -128,7 +127,7 @@ export default function MyOrders() {
           let hasApproved = false;
           let hasPending = false;
           try {
-            const pr = await axios.get(`${API}/api/payments/${o.MaDonHang}`);
+            const pr = await api.get(`/api/payments/${o.MaDonHang}`);
             const payments = Array.isArray(pr.data) ? pr.data : [];
             const r = inspectPayments(payments);
             hasApproved = r.hasApproved;
@@ -156,14 +155,14 @@ export default function MyOrders() {
       if (needPoll && !pollTimerRef.current) {
         pollTimerRef.current = setInterval(async () => {
           try {
-            const r = await axios.get(`${API}/api/donhang/${maKhachHang}`);
+            const r = await api.get(`/api/donhang/${maKhachHang}`);
             const base = Array.isArray(r.data) ? r.data : [];
             const again = await Promise.all(
               base.map(async (o) => {
                 let hasApproved = false;
                 let hasPending = false;
                 try {
-                  const pr = await axios.get(`${API}/api/payments/${o.MaDonHang}`);
+                  const pr = await api.get(`/api/payments/${o.MaDonHang}`);
                   const payments = Array.isArray(pr.data) ? pr.data : [];
                   const r2 = inspectPayments(payments);
                   hasApproved = r2.hasApproved;
@@ -247,7 +246,7 @@ export default function MyOrders() {
       if (!ok.isConfirmed) return;
 
       try {
-        await axios.put(`${API}/api/donhang/huy/${order.MaDonHang}`);
+        await api.put(`/api/donhang/huy/${order.MaDonHang}`);
         await Swal.fire({
           icon: "success",
           title: "Đã gửi yêu cầu hủy",
