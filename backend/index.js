@@ -9,7 +9,7 @@ const cron = require('node-cron');
 
 
 const app = express();
-const PORT = 3001;
+
 
 /* ===== CORS with credentials (DEV whitelist) ===== */
 const whitelist = [
@@ -47,23 +47,21 @@ app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 /* ===== MySQL Connection ===== */
-const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '',            // chỉnh nếu cần
-  database: 'shopdienthoai'
-});
-const dbp = db.promise();
-
-
-db.connect(err => {
-  if (err) {
-    console.error('❌ Không thể kết nối DB:', err);
-    process.exit(1);
-  }
-  console.log('✅ Đã kết nối MySQL');
-});
-
+const connStr = process.env.MYSQL_URL || process.env.MYSQL_PUBLIC_URL;
++ const db = connStr
++   ? mysql.createPool(connStr)
++   : mysql.createPool({
++       host: process.env.MYSQLHOST,
++       user: process.env.MYSQLUSER,
++       password: process.env.MYSQLPASSWORD,
++       database: process.env.MYSQLDATABASE,
++       port: Number(process.env.MYSQLPORT || 3306),
++     });
++ const dbp = db.promise();
++ db.getConnection((err, conn) => {
++   if (err) console.error('❌ DB connect error:', err.message);
++   else { console.log('✅ MySQL pool ready'); conn.release(); }
++ });
 /* ===== Multer setup ===== */
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, 'uploads'),
