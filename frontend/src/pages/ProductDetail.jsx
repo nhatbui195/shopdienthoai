@@ -1,7 +1,7 @@
 // src/pages/ProductDetail.jsx
 import React, { useEffect, useRef, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+// import axios from "axios";
 import TopBar from "../components/TopBar";
 import "../styles/pages/ProductDetail.css";
 import OrderSheet from "./OrderSheet.jsx"; // ✅ gọi OrderSheet để đặt hàng
@@ -9,15 +9,14 @@ import Swal from "sweetalert2";
 import { upsertCartItem } from "../utils/cart";
 import { Link } from "react-router-dom";
 
-
-const API = "http://localhost:3001";
+import { api, toURL, fmtVND } from "../lib/api"; // ✅ dùng client & helper chung
 
 /* ================= Helpers ================= */
-const safeImage = (src) => (src && src.startsWith("http") ? src : `${API}${src || ""}`);
+const safeImage = (src) => toURL(src); // ✅ ghép baseURL tự động nếu là path tương đối
 const getId    = (p) => p?.MaSanPham ?? p?.id ?? p?.ID ?? "";
 const getName  = (p) => p?.TenSanPham ?? p?.name ?? "Sản phẩm";
 const getPrice = (p) => Number(p?.DonGia ?? p?.GiaBan ?? p?.price ?? 0) || 0;
-const fmtVND   = (n) => (Number(n) || 0).toLocaleString("vi-VN", { style: "currency", currency: "VND" });
+// const fmtVND   = (n) => (Number(n) || 0).toLocaleString("vi-VN", { style: "currency", currency: "VND" });
 
 const pickImages = (p) => {
   let list = [];
@@ -110,14 +109,14 @@ export default function ProductDetail() {
 
     const ctrl = new AbortController();
 
-    axios
-      .get(`${API}/api/products/${id}`, { signal: ctrl.signal })
+    api
+      .get(`/api/products/${id}`, { signal: ctrl.signal })
       .then((res) => setProd(res.data || {}))
       .catch((e) => {
         if (e.name !== "CanceledError") console.error("Load product error:", e);
       });
 
-    axios.get(`${API}/api/stores`).then((r) => setStores(r.data || [])).catch(() => {});
+    api.get(`/api/stores`).then((r) => setStores(r.data || [])).catch(() => {});
 
     return () => ctrl.abort();
   }, [id]);
@@ -126,18 +125,18 @@ export default function ProductDetail() {
   useEffect(() => {
     if (!id) return;
 
-    axios
-      .get(`${API}/api/chitietsanpham/${id}`)
+    api
+      .get(`/api/chitietsanpham/${id}`)
       .then((r) => setSpecs(r.data || null))
       .catch(() => setSpecs(null));
 
-    axios
-      .get(`${API}/api/products/${id}/variants`)
+    api
+      .get(`/api/products/${id}/variants`)
       .then((r) => setVariants(Array.isArray(r.data) ? r.data : []))
       .catch(() => setVariants([]));
 
-    axios
-      .get(`${API}/api/products/${id}/extended`)
+    api
+      .get(`/api/products/${id}/extended`)
       .then((r) => {
         const data = r.data || {};
         const cmsObj = {
@@ -174,17 +173,17 @@ export default function ProductDetail() {
       ...(Array.isArray(prod?.BoNhoTrongList) ? prod.BoNhoTrongList : []),
     ]);
   }, [variants, prod, specs]);
-  const segments = useMemo(() => {
-  if (!prod) return [];
-  return [
-    { label: "Điện thoại", href: "/dien-thoai", dim: true },      // mục trung gian (tùy anh)
-    prod?.HangSanXuat
-      ? { label: prod.HangSanXuat, href: `/hang/${slugify(prod.HangSanXuat)}`, dim: true }
-      : null,
-    { label: getName(prod) },                                     // mục cuối (current)
-  ].filter(Boolean);
-}, [prod]);
 
+  const segments = useMemo(() => {
+    if (!prod) return [];
+    return [
+      { label: "Điện thoại", href: "/dien-thoai", dim: true },
+      prod?.HangSanXuat
+        ? { label: prod.HangSanXuat, href: `/hang/${slugify(prod.HangSanXuat)}`, dim: true }
+        : null,
+      { label: getName(prod) },
+    ].filter(Boolean);
+  }, [prod]);
 
   /* ============ Đặt lựa chọn mặc định hợp lệ ============ */
   useEffect(() => {
@@ -223,40 +222,39 @@ export default function ProductDetail() {
 
   /* ===== Cart & Buy ===== */
   const handleAddToCart = async () => {
-  const imagesArr = pickImages(prod);
-  const item = {
-    id: getId(prod) || `${getName(prod)}:${String(color)}:${String(capacity)}`,
-    name: getName(prod),
-    image: safeImage(imagesArr[0]),
-    price: Number(unitPrice || 0),
-    color: String(color || ""),
-    capacity: String(capacity || ""),
+    const imagesArr = pickImages(prod);
+    const item = {
+      id: getId(prod) || `${getName(prod)}:${String(color)}:${String(capacity)}`,
+      name: getName(prod),
+      image: safeImage(imagesArr[0]),
+      price: Number(unitPrice || 0),
+      color: String(color || ""),
+      capacity: String(capacity || ""),
+    };
+
+    const qtyNum = Math.max(1, Number(qty) || 1);
+    const nextList = upsertCartItem(item, qtyNum); // ghi vào localStorage("cart") + dispatch CART_UPDATED
+
+    const totalQty = nextList.reduce((s, it) => s + (Number(it.qty) || 0), 0);
+    await Swal.fire({
+      toast: true,
+      position: "top-end",
+      icon: "success",
+      title: "Đã thêm vào giỏ!",
+      html: `<div style="text-align:left">
+               <b>${item.name}</b><br/>${item.color} ${item.capacity} × +${qtyNum}<br/>
+               <small>Tổng SL trong giỏ: ${totalQty}</small>
+             </div>`,
+      showConfirmButton: true,
+      confirmButtonText: "Xem giỏ hàng",
+      timer: 1600,
+      timerProgressBar: true,
+    }).then(r => { if (r.isConfirmed) window.location.href = "/gio-hang"; });
   };
-
-  const qtyNum = Math.max(1, Number(qty) || 1);
-  const nextList = upsertCartItem(item, qtyNum); // ghi vào localStorage("cart") + dispatch CART_UPDATED
-
-  const totalQty = nextList.reduce((s, it) => s + (Number(it.qty) || 0), 0);
-  await Swal.fire({
-    toast: true,
-    position: "top-end",
-    icon: "success",
-    title: "Đã thêm vào giỏ!",
-    html: `<div style="text-align:left">
-             <b>${item.name}</b><br/>${item.color} ${item.capacity} × +${qtyNum}<br/>
-             <small>Tổng SL trong giỏ: ${totalQty}</small>
-           </div>`,
-    showConfirmButton: true,
-    confirmButtonText: "Xem giỏ hàng",
-    timer: 1600,
-    timerProgressBar: true,
-  }).then(r => { if (r.isConfirmed) window.location.href = "/gio-hang"; });
-};
-
 
   // ✅ Mua ngay: mở OrderSheet với dữ liệu đang chọn + scroll tới form
   const handleBuyNow = () => {
-   setOpenSheet(true); // mở overlay — KHÔNG scroll
+    setOpenSheet(true); // mở overlay — KHÔNG scroll
   };
 
   /* ===== TOC động từ CMS ===== */
@@ -331,7 +329,7 @@ export default function ProductDetail() {
         leftIcon="bx bx-home-alt"
         onLeftClick={() => navigate("/")}
       />
-            <div className="pd-top">
+      <div className="pd-top">
         {/* ===== LEFT: Gallery & Stores ===== */}
         <section className="pd-gallery" ref={makeRevealer("left")}>
           <div className="pd-gallery__main">
@@ -368,17 +366,15 @@ export default function ProductDetail() {
             ))}
           </div>
 
-         
-            <div className="pd-banner">
-              <Link to="/back-to-school" aria-label="Back to School" style={{ display: "block" }}>
-                <img
-                  src="https://clickbuy.com.vn/core/img/EduScoreMultiplier.png"
-                  alt="Back to School"
-                  loading="lazy"
-                 
-                />
-              </Link>
-            </div>
+          <div className="pd-banner">
+            <Link to="/back-to-school" aria-label="Back to School" style={{ display: "block" }}>
+              <img
+                src="https://clickbuy.com.vn/core/img/EduScoreMultiplier.png"
+                alt="Back to School"
+                loading="lazy"
+              />
+            </Link>
+          </div>
 
           {/* Cửa hàng */}
           <div className="pd-stores card">
