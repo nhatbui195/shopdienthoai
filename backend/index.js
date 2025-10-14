@@ -47,21 +47,32 @@ app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 /* ===== MySQL Connection ===== */
+/* ===== MySQL Connection (Railway env) ===== */
 const connStr = process.env.MYSQL_URL || process.env.MYSQL_PUBLIC_URL;
-+ const db = connStr
-+   ? mysql.createPool(connStr)
-+   : mysql.createPool({
-+       host: process.env.MYSQLHOST,
-+       user: process.env.MYSQLUSER,
-+       password: process.env.MYSQLPASSWORD,
-+       database: process.env.MYSQLDATABASE,
-+       port: Number(process.env.MYSQLPORT || 3306),
-+     });
-+ const dbp = db.promise();
-+ db.getConnection((err, conn) => {
-+   if (err) console.error('❌ DB connect error:', err.message);
-+   else { console.log('✅ MySQL pool ready'); conn.release(); }
-+ });
+
+const db = connStr
+  ? mysql.createPool(connStr) // ví dụ: mysql://root:pass@mysql.railway.internal:3306/railway
+  : mysql.createPool({
+      host: process.env.MYSQLHOST || 'localhost',
+      user: process.env.MYSQLUSER || 'root',
+      password: process.env.MYSQLPASSWORD || '',
+      database: process.env.MYSQLDATABASE || 'shopdienthoai',
+      port: Number(process.env.MYSQLPORT || 3306),
+      waitForConnections: true,
+      connectionLimit: 10,
+      queueLimit: 0,
+    });
+
+const dbp = db.promise();
+
+db.getConnection((err, conn) => {
+  if (err) {
+    console.error('❌ DB connect error:', err.message);
+  } else {
+    console.log('✅ MySQL pool ready');
+    conn.release();
+  }
+});
 /* ===== Multer setup ===== */
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, 'uploads'),
