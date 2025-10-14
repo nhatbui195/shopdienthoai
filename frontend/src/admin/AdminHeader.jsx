@@ -1,7 +1,9 @@
+// src/admin/AdminHeader.jsx
 import React, { useCallback, useEffect, useRef, useState } from "react";
- import Swal from "sweetalert2";
- import "../styles/admin/AdminHeader.css";
- import { http, API } from "../../lib/api"; 
+import Swal from "sweetalert2";
+import "../styles/admin/AdminHeader.css";
+import { http } from "../lib/api"; // ⬅️ dùng client chung, KHÔNG hardcode localhost
+
 const LS_LAST_SEEN_KEY = "admin_last_seen_order_marker";
 
 /** Thuần: chuẩn hoá dữ liệu đơn hàng */
@@ -61,8 +63,9 @@ export default function AdminHeader({ onToggleSidebar, sidebarOpen }) {
   /** Fetch đơn gần đây (ổn định tham chiếu) */
   const fetchRecent = useCallback(async () => {
     try {
-    const { data: raw } = await http.get("/api/admin/orders/recent", { params: { limit: 5 } });
-     if (Array.isArray(raw)) {
+      // Endpoint recent
+      const { data: raw } = await http.get("/api/admin/orders/recent", { params: { limit: 5 } });
+      if (Array.isArray(raw)) {
         const list = normalizeOrders(raw);
         setRecentOrders(list);
 
@@ -72,16 +75,19 @@ export default function AdminHeader({ onToggleSidebar, sidebarOpen }) {
         if (newestMarker && newestMarker !== marker) setHasNew(true);
         return;
       }
-      // fallback: nếu chưa có endpoint recent -> dùng số đơn chờ
-      const waitRes = await fetch(`${API}/api/admin/thongke/doncho`);
-      if (waitRes.ok) {
-        const j = await waitRes.json();
+
+      // Fallback: số đơn chờ
+      try {
+        const { data: j } = await http.get("/api/admin/thongke/doncho");
         const waiting = Number(j?.DonHangChoXacNhan || 0);
         setRecentOrders([]);
         setHasNew(waiting > 0);
+      } catch (_) {
+        // bỏ qua nếu fallback cũng không có
       }
-    } catch {
+    } catch (e) {
       // giữ trạng thái cũ nếu lỗi mạng
+      // console.debug("fetchRecent error", e);
     }
   }, []);
 
