@@ -1,11 +1,10 @@
+// src/admin/RevenueReport.jsx
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
+import { api } from "../lib/api";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   LineChart, Line
 } from "recharts";
-
-const API = "http://localhost:3001";
 
 export default function RevenueReport() {
   const [range, setRange] = useState({
@@ -15,6 +14,7 @@ export default function RevenueReport() {
   const [data, setData] = useState([]);   // [{ month: '2025-01', revenue: 123456789 }]
   const [loading, setLoading] = useState(false);
 
+  // yyyy-MM cho 2 input month
   const query = useMemo(() => {
     const f = `${range.from.getFullYear()}-${String(range.from.getMonth()+1).padStart(2,"0")}`;
     const t = `${range.to.getFullYear()}-${String(range.to.getMonth()+1).padStart(2,"0")}`;
@@ -25,13 +25,12 @@ export default function RevenueReport() {
     (async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`${API}/api/admin/reports/revenue`, {
-          params: { from: query.f, to: query.t }
+        const res = await api.get("/api/admin/reports/revenue", {
+          params: { from: query.f, to: query.t },
         });
-        // Chuẩn hoá field trả về
         const rows = (res.data || []).map(r => ({
           month: r.Thang || r.month,
-          revenue: Number(r.DoanhThu || r.revenue || 0)
+          revenue: Number(r.DoanhThu || r.revenue || 0),
         }));
         setData(rows);
       } finally {
@@ -66,7 +65,7 @@ export default function RevenueReport() {
           }}
         />
         <span style={{ marginLeft:"auto", fontWeight:700 }}>
-          Tổng: {total.toLocaleString()} đ
+          Tổng: {total.toLocaleString("vi-VN")} đ
         </span>
       </div>
 
@@ -76,7 +75,7 @@ export default function RevenueReport() {
           <XAxis dataKey="month" />
           <YAxis />
           <Tooltip />
-          <Bar dataKey="revenue" radius={[6,6,0,0]} fill="#4f46e5" />
+          <Bar dataKey="revenue" radius={[6,6,0,0]} />
         </BarChart>
       </ResponsiveContainer>
 
@@ -87,7 +86,7 @@ export default function RevenueReport() {
           <XAxis dataKey="month" />
           <YAxis />
           <Tooltip />
-          <Line type="monotone" dataKey="revenue" stroke="#10b981" strokeWidth={2} dot={false} />
+          <Line type="monotone" dataKey="revenue" strokeWidth={2} dot={false} />
         </LineChart>
       </ResponsiveContainer>
 
