@@ -1,14 +1,15 @@
+// src/pages/BackToSchool.jsx
 import React, { useEffect, useMemo, useState, useCallback } from "react";
-import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import "../styles/pages/BackToSchool.css";
 import BreadcrumbBar from "../components/BreadcrumbBar";
+import { api, fileURL } from "../lib/api"; // ✅ dùng client chung
 
-const API = "http://localhost:3001";
 void motion;
+
 /* ============== Helpers ============== */
-const safeImage = (src) => (src && src.startsWith("http") ? src : `${API}${src || ""}`);
+const safeImage = (src) => fileURL(src || "");
 const getId = (p) => p?.MaSanPham ?? p?.id ?? p?.ID ?? String(Math.random());
 const getPrice = (p) => Number(p?.DonGia ?? p?.GiaBan ?? 0) || 0;
 const nameOf = (p) => String(p?.TenSanPham || p?.name || "");
@@ -50,7 +51,8 @@ const byPhone     = (p) => /(iphone|samsung|xiaomi|realme|oppo|vivo|nokia|tecno)
 const byWatch     = (p) => /(watch|dong ho|đong ho|đồng ho|đồng hồ|galaxy watch|apple watch)/i.test(norm(nameOf(p)));
 const byEarbuds   = (p) => /(airpods|buds|earbuds|tai nghe|headphone|headset)/i.test(norm(nameOf(p)));
 const byOld       = (p) => /(cu|cũ|renew|99%|95%|like new|hang cu|hàng cũ)/i.test(norm(nameOf(p)));
-const byClearance = (p) => /(xa kho|xả kho|clearance|sale|gia soc|giá sốc)/i.test(norm(nameOf(p))) || getPrice(p) > 0;
+const byClearance = (p) =>
+  /(xa kho|xả kho|clearance|sale|gia soc|giá sốc)/i.test(norm(nameOf(p))) || getPrice(p) > 0;
 
 /* ============== Framer Motion variants ============== */
 const revealUp = {
@@ -82,7 +84,7 @@ export default function BackToSchool() {
   /* ============== Fetch products ============== */
   useEffect(() => {
     const ctrl = new AbortController();
-    axios.get(`${API}/api/products`, { signal: ctrl.signal })
+    api.get("/api/products", { signal: ctrl.signal })
       .then((res) => setData(res.data || []))
       .catch(() => {});
     return () => ctrl.abort();
@@ -140,9 +142,7 @@ export default function BackToSchool() {
   ]), []);
 
   /* ============== Smooth hash nav ============== */
-  const handleHashClick = useCallback((e, href) => {
-    if (!href.startsWith("#")) return;
-    e.preventDefault();
+  const navigateHash = useCallback((href) => {
     const id = href.slice(1);
     const el = document.getElementById(id);
     if (!el) return;
@@ -154,7 +154,13 @@ export default function BackToSchool() {
     }
   }, [navigate]);
 
-  /* ============== Product card (như Home.jsx) ============== */
+  const handleHashClick = useCallback((e, href) => {
+    if (!href.startsWith("#")) return;
+    e.preventDefault();
+    navigateHash(href);
+  }, [navigateHash]);
+
+  /* ============== Product card ============== */
   const renderItem = (p) => {
     const img = safeImage(p?.HinhAnhList?.[0] || p?.HinhAnh);
     const price = getPrice(p);
@@ -196,59 +202,46 @@ export default function BackToSchool() {
       />
 
       {/* Hero / CTA / Title */}
-      {isClickbuyImg(hero.top) ? (
+      <motion.img
+        className="bts-hero cb-clickable"
+        src={"https://clickbuy.com.vn/uploads/landingpage/2_55876.png?v=2"}
+        alt=""
+        variants={zoomIn}
+        initial="hidden"
+        whileInView="show"
+        whileTap={tapWiggle}
+        viewport={{ once: false, amount: 0.25 }}
+      />
+
+      <div className="bts-cta">
         <motion.img
-          className="bts-hero cb-clickable"
-          src={hero.top}
+          className="cb-clickable"
+          src={"https://clickbuy.com.vn/uploads/landingpage/2_55992.png?v=2"}
           alt=""
-          variants={zoomIn}
+          variants={revealLeft}
           initial="hidden"
           whileInView="show"
           whileTap={tapWiggle}
           viewport={{ once: false, amount: 0.25 }}
         />
-      ) : (
-        <img className="bts-hero" src={hero.top} alt="" />
-      )}
-
-      <div className="bts-cta">
-        {isClickbuyImg(hero.cta) ? (
-          <motion.img
-            className="cb-clickable"
-            src={hero.cta}
-            alt=""
-            variants={revealLeft}
-            initial="hidden"
-            whileInView="show"
-            whileTap={tapWiggle}
-            viewport={{ once: false, amount: 0.25 }}
-          />
-        ) : (
-          <img src={hero.cta} alt="" />
-        )}
       </div>
 
       <div className="bts-title">
-        {isClickbuyImg(hero.title) ? (
-          <motion.img
-            className="cb-clickable"
-            src={hero.title}
-            alt=""
-            variants={revealRight}
-            initial="hidden"
-            whileInView="show"
-            whileTap={tapWiggle}
-            viewport={{ once: false, amount: 0.25 }}
-          />
-        ) : (
-          <img src={hero.title} alt="" />
-        )}
+        <motion.img
+          className="cb-clickable"
+          src={"https://clickbuy.com.vn/uploads/landingpage/2_55895.png?v=2"}
+          alt=""
+          variants={revealRight}
+          initial="hidden"
+          whileInView="show"
+          whileTap={tapWiggle}
+          viewport={{ once: false, amount: 0.25 }}
+        />
       </div>
 
       {/* 8 ô cam */}
       <div className="bts-tiles">
         {tiles.map((t, i) => {
-          const isCB = isClickbuyImg(t.img);
           const isHash = t.href.startsWith("#");
           const hoverFx = { scale: 1.015, y: -3, transition: { duration: 0.18 } };
 
@@ -257,13 +250,11 @@ export default function BackToSchool() {
               className="bts-tile-full cb-clickable"
               src={t.img}
               alt=""
-              {...(isCB ? {
-                variants: revealUp,
-                initial: "hidden",
-                whileInView: "show",
-                viewport: { once: false, amount: 0.3 },
-                transition: { delay: i * 0.06 }
-              } : {})}
+              variants={revealUp}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: false, amount: 0.3 }}
+              transition={{ delay: i * 0.06 }}
               whileHover={hoverFx}
               whileTap={tapWiggle}
             />
@@ -271,7 +262,13 @@ export default function BackToSchool() {
 
           if (isHash) {
             return (
-              <a key={t.key} href={t.href} className="bts-tile" onClick={(e) => handleHashClick(e, t.href)} aria-label={t.key}>
+              <a
+                key={t.key}
+                href={t.href}
+                className="bts-tile"
+                onClick={(e) => handleHashClick(e, t.href)}
+                aria-label={t.key}
+              >
                 {inner}
               </a>
             );
@@ -293,114 +290,100 @@ export default function BackToSchool() {
 
       {/* Sections */}
       <section id="macbook" className="bts-section">
-        {isClickbuyImg(strips.mac) ? (
-          <motion.img
-            className="bts-strip cb-clickable"
-            src={strips.mac}
-            alt=""
-            variants={revealUp}
-            initial="hidden"
-            whileInView="show"
-            whileTap={tapWiggle}
-            viewport={{ once: false, amount: 0.3 }}
-          />
-        ) : <img className="bts-strip" src={strips.mac} alt="" />}
+        <motion.img
+          className="bts-strip cb-clickable"
+          src={strips.mac}
+          alt=""
+          variants={revealUp}
+          initial="hidden"
+          whileInView="show"
+          whileTap={tapWiggle}
+          viewport={{ once: false, amount: 0.3 }}
+        />
         <div className="product-list-grid wide">{macbooks.map(renderItem)}</div>
       </section>
 
       <section id="ipad" className="bts-section">
-        {isClickbuyImg(strips.ipad) ? (
-          <motion.img
-            className="bts-strip cb-clickable"
-            src={strips.ipad}
-            alt=""
-            variants={revealUp}
-            initial="hidden"
-            whileInView="show"
-            whileTap={tapWiggle}
-            viewport={{ once: false, amount: 0.3 }}
-          />
-        ) : <img className="bts-strip" src={strips.ipad} alt="" />}
+        <motion.img
+          className="bts-strip cb-clickable"
+          src={strips.ipad}
+          alt=""
+          variants={revealUp}
+          initial="hidden"
+          whileInView="show"
+          whileTap={tapWiggle}
+          viewport={{ once: false, amount: 0.3 }}
+        />
         <div className="product-list-grid wide">{ipads.map(renderItem)}</div>
       </section>
 
       <section id="phone" className="bts-section">
-        {isClickbuyImg(strips.phone) ? (
-          <motion.img
-            className="bts-strip cb-clickable"
-            src={strips.phone}
-            alt=""
-            variants={revealUp}
-            initial="hidden"
-            whileInView="show"
-            whileTap={tapWiggle}
-            viewport={{ once: false, amount: 0.3 }}
-          />
-        ) : <img className="bts-strip" src={strips.phone} alt="" />}
+        <motion.img
+          className="bts-strip cb-clickable"
+          src={strips.phone}
+          alt=""
+          variants={revealUp}
+          initial="hidden"
+          whileInView="show"
+          whileTap={tapWiggle}
+          viewport={{ once: false, amount: 0.3 }}
+        />
         <div className="product-list-grid wide">{phones.map(renderItem)}</div>
       </section>
 
       <section id="old" className="bts-section">
-        {isClickbuyImg(strips.old) ? (
-          <motion.img
-            className="bts-strip cb-clickable"
-            src={strips.old}
-            alt=""
-            variants={revealUp}
-            initial="hidden"
-            whileInView="show"
-            whileTap={tapWiggle}
-            viewport={{ once: false, amount: 0.3 }}
-          />
-        ) : <img className="bts-strip" src={strips.old} alt="" />}
+        <motion.img
+          className="bts-strip cb-clickable"
+          src={strips.old}
+          alt=""
+          variants={revealUp}
+          initial="hidden"
+          whileInView="show"
+          whileTap={tapWiggle}
+          viewport={{ once: false, amount: 0.3 }}
+        />
         <div className="product-list-grid wide">{oldItems.map(renderItem)}</div>
       </section>
 
       <section id="ear" className="bts-section">
-        {isClickbuyImg(strips.ear) ? (
-          <motion.img
-            className="bts-strip cb-clickable"
-            src={strips.ear}
-            alt=""
-            variants={revealUp}
-            initial="hidden"
-            whileInView="show"
-            whileTap={tapWiggle}
-            viewport={{ once: false, amount: 0.3 }}
-          />
-        ) : <img className="bts-strip" src={strips.ear} alt="" />}
+        <motion.img
+          className="bts-strip cb-clickable"
+          src={strips.ear}
+          alt=""
+          variants={revealUp}
+          initial="hidden"
+          whileInView="show"
+          whileTap={tapWiggle}
+          viewport={{ once: false, amount: 0.3 }}
+        />
         <div className="product-list-grid wide">{earbuds.map(renderItem)}</div>
       </section>
 
       <section id="watch" className="bts-section">
-        {isClickbuyImg(strips.watch) ? (
-          <motion.img
-            className="bts-strip cb-clickable"
-            src={strips.watch}
-            alt=""
-            variants={revealUp}
-            initial="hidden"
-            whileInView="show"
-            whileTap={tapWiggle}
-            viewport={{ once: false, amount: 0.3 }}
-          />
-        ) : <img className="bts-strip" src={strips.watch} alt="" />}
+        <motion.img
+          className="bts-strip cb-clickable"
+          src={strips.watch}
+          alt=""
+          variants={revealUp}
+          initial="hidden"
+          whileInView="show"
+          whileTap={tapWiggle}
+          viewport={{ once: false, amount: 0.3 }}
+        />
         <div className="product-list-grid wide">{watches.map(renderItem)}</div>
       </section>
 
       <section id="xakho" className="bts-section">
-        {isClickbuyImg(strips.xakho) ? (
-          <motion.img
-            className="bts-strip cb-clickable"
-            src={strips.xakho}
-            alt=""
-            variants={revealUp}
-            initial="hidden"
-            whileInView="show"
-            whileTap={tapWiggle}
-            viewport={{ once: false, amount: 0.3 }}
-          />
-        ) : <img className="bts-strip" src={strips.xakho} alt="" />}
+        <motion.img
+          className="bts-strip cb-clickable"
+          src={strips.xakho}
+          alt=""
+          variants={revealUp}
+          initial="hidden"
+          whileInView="show"
+          whileTap={tapWiggle}
+          viewport={{ once: false, amount: 0.3 }}
+        />
         <div className="product-list-grid wide">{clearance.map(renderItem)}</div>
       </section>
     </div>
