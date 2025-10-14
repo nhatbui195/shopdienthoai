@@ -357,3 +357,74 @@ main, .home {
     left: 8px !important;
   }
 }
+/* ===== MOBILE HEADER FIX (<= 768px) ===== */
+@media (max-width: 768px){
+  .header{
+    flex-wrap: wrap;
+    row-gap: 8px;
+    padding: 10px 12px;
+  }
+
+  .header-left{ width: 100%; display:flex; justify-content:space-between; align-items:center; }
+  .logo{ font-size: 18px; }
+
+  /* Search xuống hàng 2, full width */
+  .header-search{
+    order: 3;
+    width: 100%;
+  }
+  .header-search input{
+    width: 100%;
+    height: 40px;
+    font-size: 14px;
+  }
+
+  /* Actions nằm hàng 1 bên phải, cuộn ngang khi chật */
+  .header-actions{
+    order: 2;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;      /* chừa chỗ cho thanh cuộn nếu xuất hiện */
+  }
+
+  /* Mỗi item giữ trên 1 dòng, không bể chữ dọc */
+  .header-actions a,
+  .header-actions button{
+    display: flex !important;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;      /* 👈 chống xuống dòng dọc */
+    font-size: 13px;
+    line-height: 1;
+    padding: 6px 8px;
+    border-radius: 6px;
+  }
+  .header-actions a i,
+  .header-actions button i{
+    font-size: 18px;
+    flex: 0 0 auto;
+  }
+
+  /* Menu tài khoản bung về bên phải, không tràn màn hình */
+  .account-pop{ position: relative; }
+  .account-pop .account-menu{
+    right: 0; left: auto;
+    max-width: min(92vw, 360px);
+  }
+}
+
+/* ===== VERY SMALL (<= 420px): chỉ hiển thị icon, ẩn chữ để đỡ chật ===== */
+@media (max-width: 420px){
+  .header-actions a span,
+  .header-actions button span{
+    display: none;            /* ẩn nhãn, giữ icon */
+  }
+  .header-actions a,
+  .header-actions button{
+    padding: 8px;
+  }
+}

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import 'boxicons/css/boxicons.min.css';   
-import '../styles/components/SidebarMenu.css';
+import React, { useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import "boxicons/css/boxicons.min.css";
+import "../styles/components/SidebarMenu.css";
 
 const menuItems = [
   { label: "IPHONE 16", hot: true, icon: "bxl-apple",
@@ -88,8 +89,29 @@ const menuItems = [
 
 export default function SidebarMenu() {
   const [hoveredItem, setHoveredItem] = useState(null);
+  const navigate = useNavigate();
+
   const handleMouseEnter = (label) => setHoveredItem(label);
   const handleMouseLeave = () => setHoveredItem(null);
+
+  // Chuẩn hoá text -> keyword query
+  const toKeyword = useCallback((text) => {
+    // Ví dụ: “iPhone 16 Series” -> “iphone 16”
+    const cleaned = String(text)
+      .replace(/Series|series|cũ giá rẻ|cũ/gi, "") // bỏ từ thừa
+      .replace(/\s+/g, " ")
+      .trim();
+    return cleaned;
+  }, []);
+
+  const handleSubItemClick = useCallback((text) => {
+    const q = toKeyword(text);
+    // điều hướng soft (SPA), không reload
+    navigate(`/search?keyword=${encodeURIComponent(q)}`);
+    // tuỳ UX: đóng submenu sau khi click
+    setHoveredItem(null);
+  }, [navigate, toKeyword]);
+
   const activeSubmenu = menuItems.find(item => item.label === hoveredItem)?.submenu;
 
   return (
@@ -102,7 +124,6 @@ export default function SidebarMenu() {
             onMouseEnter={() => item.submenu && handleMouseEnter(item.label)}
           >
             <div className="has-submenu">
-              {/* ✅ icon */}
               <i className={`bx ${item.icon} menu-icon`}></i>
               {item.label} {item.hot && <span className="hot">HOT</span>}
             </div>
@@ -113,16 +134,24 @@ export default function SidebarMenu() {
       {activeSubmenu && (
         <>
           <div className="submenu-buffer" />
-          <div
-            className={`submenu ${hoveredItem === "Điện thoại" ? "submenu-phone" : ""}`}
-          >
+          <div className={`submenu ${hoveredItem === "Điện thoại" ? "submenu-phone" : ""}`}>
             <div className="submenu-multi">
               {activeSubmenu.map((col, i) => (
                 <div className="submenu-col" key={i}>
                   <h4>{col.title}</h4>
                   <ul>
                     {col.items.map((p, j) => (
-                      <li key={j}>{p}</li>
+                      <li key={j}>
+                        {/* Dùng button để không phải là thẻ <a> (tránh reload) */}
+                        <button
+                          type="button"
+                          className="submenu-link"
+                          onClick={() => handleSubItemClick(p)}
+                          aria-label={`Xem ${p}`}
+                        >
+                          {p}
+                        </button>
+                      </li>
                     ))}
                   </ul>
                 </div>

@@ -209,7 +209,6 @@ const positionPanel = useCallback(() => {
         </div>
 
         <nav className="header-actions">
-          <a href="tel:1900633471"><i className="bx bx-phone"></i> 1900.633.471</a>
           <Link to="/chinh-sach-bao-hanh"><i className="bx bx-file"></i> Chính sách bảo hành</Link>
           <Link to="/he-thong-cua-hang"><i className="bx bx-store"></i> Hệ thống Cửa hàng</Link>
           <Link to="/gio-hang" className="region-btn" title="Giỏ hàng"><i className="bx bx-cart"></i> Giỏ Hàng</Link>

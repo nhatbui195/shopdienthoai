@@ -1,127 +1,192 @@
-.left-side {
+/* ====== Shell ====== */
+.left-side{
   position: relative;
-  z-index: 1;
-  width: 200px;
+  z-index: 10;
+  width: 220px;                 /* rộng hơn 1 chút cho icon + text */
   background: #fff;
-  font-family: sans-serif;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  border-radius: 8px;
+  overflow: visible;            /* để submenu hiển thị ngoài */
+  box-shadow: 0 2px 8px rgba(0,0,0,.04);
 }
 
-.left-side ul {
+.left-side ul{
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-.left-side li {
+.left-side li{
   position: relative;
   min-height: 48px;
-  padding: 12px 16px;
+  padding: 12px 14px;
   width: 100%;
   box-sizing: border-box;
-  cursor: pointer;
-  color: #000;
+  cursor: default;
+  color: #111827;
   background: #fff;
-  transition: background 0.3s ease, color 0.3s ease;
-}
-
-.left-side li:hover {
-  background: #f0f0f0;
-  color: red;
-}
-
-.left-side .hot {
-  color: red;
-  font-size: 12px;
-  margin-left: 8px;
-}
-
-.has-submenu {
+  transition: background .2s ease, color .2s ease;
   display: flex;
   align-items: center;
+}
+
+.left-side li:hover{
+  background: #f7f7f8;
+  color: #d70000;
+}
+
+.menu-icon{
+  font-size: 20px;
+  color: #6b7280;
+  margin-right: 10px;
+  transition: color .2s ease;
+}
+.left-side li:hover .menu-icon{ color: #d70000; }
+
+.left-side .hot{
+  color: #d70000;
+  font-size: 11px;
+  font-weight: 700;
+  margin-left: 8px;
+  letter-spacing: .2px;
+  padding: 2px 6px;
+  background: #fdecec;
+  border-radius: 999px;
+}
+
+.has-submenu{
+  display: flex;
+  align-items: center;
+  gap: 6px;
   height: 100%;
 }
 
-/* ===== Submenu ===== */
-/* ===== Submenu ===== */
-.submenu {
+/* ====== Submenu (popout) ====== */
+.submenu{
   position: absolute;
   top: 0;
   left: 100%;
-  margin-left: 20px;
+  margin-left: 14px;
 
-  /* ❗ Cố định kích thước cho tất cả submenu */
-  width: 41.1vw;          /* hoặc đặt 700px tuỳ anh */
-  min-width: 400px;     /* đảm bảo tối thiểu */
-  max-width: 680px;     /* có thể thêm nếu cần */
+  /* khung cố định cho mọi submenu */
+  width: 41.1vw;
+  min-width: 520px;
+  max-width: 760px;
+  height: 420px;
 
   background: #fff;
-  border-radius: 6px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  z-index: 1;
-  padding: 20px 30px;
-  white-space: nowrap;
+  border-radius: 10px;
+  box-shadow: 0 10px 24px rgba(15,23,42,.12);
+  z-index: 100;                 /* cao hơn side */
+  padding: 20px 26px;
+  white-space: normal;
 
-  /* nếu nội dung ít hơn vẫn giữ nguyên chiều cao */
   display: flex;
   align-items: flex-start;
+  pointer-events: auto;         /* nhận hover */
 }
 
-.submenu-multi {
+/* riêng cho mục “Điện thoại” (nhiều cột hơn) */
+.submenu-phone{
+  height: 660px;
+}
+
+/* lưới cột bên trong submenu */
+.submenu-multi{
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 40px;
+  grid-template-columns: repeat(3, minmax(180px, 1fr));
+  gap: 28px 36px;
   width: 100%;
+  overflow: hidden;
 }
 
-.submenu-col h4 {
-  font-weight: 600;
-  margin: 0 0 10px 0;
-  font-size: 16px;
+/* cột nhỏ */
+.submenu-col h4{
+  font-weight: 700;
+  margin: 0 0 10px;
+  font-size: 15px;
+  color: #0f172a;
 }
 
-.submenu-col ul {
+.submenu-col ul{
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-.submenu-col li {
+.submenu-col li{
   padding: 6px 0;
+}
+
+/* dùng button thay a để không reload – style như link */
+.submenu-link{
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0;
   cursor: pointer;
-  transition: color 0.2s;
+  font: inherit;
+  color: #111827;
+  text-align: left;
+  line-height: 1.45;
+  transition: color .15s ease, text-decoration-color .15s ease;
+}
+.submenu-link:hover{
+  color: #d70000;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
-.submenu-col li:hover {
-  color: red;
-}
-
-/* chống mất hover */
-.submenu-buffer {
+/* chống “đứt hover” giữa li và submenu */
+.submenu-buffer{
   position: absolute;
   top: 0;
   left: 100%;
-  width: 20px;
+  width: 14px;
   height: 100%;
-}
-/* submenu mặc định cho tất cả các mục */
-.submenu {
-  width: 41.1vw;
-  height: 400px;
-  /* …các thuộc tính sẵn có… */
+  background: transparent;
+  z-index: 50;
 }
 
-/* submenu riêng cho mục “Điện thoại” */
-.submenu-phone {
-  width: 41.1vw;      /* rộng hơn các mục khác */
-  height: 670px;   
-}
-.menu-icon {
-  font-size: 20px;    /* kích thước icon */
-  color: #555;
-  transition: color 0.2s;
+/* ====== State & interactions ====== */
+.has-submenu-wrapper{ cursor: default; } /* item có submenu */
+.left-side li:not(.has-submenu-wrapper){ cursor: pointer; }
+
+/* ====== Responsive tinh gọn ====== */
+@media (max-width: 1280px){
+  .submenu{
+    width: 50vw;
+    min-width: 480px;
+    height: 420px;
+  }
+  .submenu-phone{
+    height: 600px;
+  }
+  .submenu-multi{
+    grid-template-columns: repeat(2, minmax(180px, 1fr));
+  }
 }
 
-.left-side li:hover .menu-icon {
-  color: red;         /* đổi màu icon khi hover */
+@media (max-width: 960px){
+  .left-side{ width: 200px; }
+  .submenu{
+    width: 58vw;
+    min-width: 420px;
+    height: auto;
+    max-height: 70vh;
+    overflow: auto;
+  }
+  .submenu-phone{ height: auto; max-height: 70vh; }
+  .submenu-multi{
+    grid-template-columns: repeat(2, minmax(160px, 1fr));
+    gap: 20px 24px;
+  }
 }
 
+/* ====== Fix xung đột lớp overlay/đề xuất khác ====== */
+.left-side,
+.submenu{
+  /* đảm bảo trên các overlay nền, nhưng dưới header cố định (tuỳ site) */
+  /* nếu header dùng z-index 1000+, giữ submenu dưới/hoặc tăng lên khi cần */
+  z-index: 200;
+}
