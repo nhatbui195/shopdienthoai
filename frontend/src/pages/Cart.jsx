@@ -1,10 +1,11 @@
 // src/pages/Cart.jsx
 import React, { useEffect, useMemo, useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import "../styles/pages/Cart.css";
 import TopBar from "../components/TopBar";
 import { readCart, writeCart, clearCart, readUser } from "../utils/cart"; // ✅ cart per-user
+import { fileURL } from "../lib/api"; // ✅ dùng helper chung cho ảnh
 
 const fmtVND = (n) =>
   (Number(n) || 0).toLocaleString("vi-VN", { style: "currency", currency: "VND" });
@@ -126,7 +127,7 @@ export default function Cart() {
       if (r.isConfirmed) window.dispatchEvent(new CustomEvent("OPEN_LOGIN_MODAL"));
       return;
     }
-    // Nếu anh muốn tạo đơn hàng trước rồi thanh toán thì điều hướng kèm orderId thay vì amount.
+    // Nếu muốn tạo đơn trước rồi thanh toán thì thay amount bằng orderId.
     navigate(`/payment?amount=${encodeURIComponent(totalPrice || 0)}`);
   }, [navigate, totalPrice]);
 
@@ -157,7 +158,8 @@ export default function Cart() {
                 return (
                   <div className="cart__row" key={key}>
                     <div className="cart__prod">
-                      <img className="cart__thumb" src={it.image} alt={it.name} />
+                      {/* ✅ dùng fileURL để hỗ trợ path tương đối từ BE */}
+                      <img className="cart__thumb" src={fileURL(it.image)} alt={it.name} />
                       <div className="cart__meta">
                         <div className="cart__name" title={it.name}>{it.name}</div>
                         <div className="cart__variant">{it.color || ""} {it.capacity || ""}</div>
@@ -236,7 +238,7 @@ function EmptyCart() {
     <div className="cart-empty">
       <div className="cart-empty__title">Giỏ hàng trống</div>
       <div className="cart-empty__desc">Hãy thêm sản phẩm vào giỏ để tiếp tục mua sắm.</div>
-      <a href="/" className="btn btn--dark">Tiếp tục mua sắm</a>
+      <Link to="/" className="btn btn--dark">Tiếp tục mua sắm</Link>
     </div>
   );
 }
