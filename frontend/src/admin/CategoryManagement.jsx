@@ -1,10 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import axios from "axios";
+import { http } from "../lib/api";                // ⬅️ dùng client chung
 import "../styles/admin/CategoryManagement.css";
-
-const API =
-  (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_BASE) ||
-  "http://localhost:3001";
 
 export default function CategoryManagement() {
   const [items, setItems] = useState([]);
@@ -35,7 +31,7 @@ export default function CategoryManagement() {
     setLoading(true);
     setError("");
     try {
-      const res = await axios.get(`${API}/api/categories`);
+      const res = await http.get("/api/categories");
       setItems(res.data || []);
     } catch (e) {
       setError("Không tải được danh mục. Vui lòng thử lại.");
@@ -61,11 +57,9 @@ export default function CategoryManagement() {
       setError("");
       try {
         if (editingId) {
-          await axios.put(`${API}/api/categories/${editingId}`, {
-            TenDanhMuc: ten,
-          });
+          await http.put(`/api/categories/${editingId}`, { TenDanhMuc: ten });
         } else {
-          await axios.post(`${API}/api/categories`, { TenDanhMuc: ten });
+          await http.post("/api/categories", { TenDanhMuc: ten });
         }
         await loadCategories();
         resetForm();
@@ -90,7 +84,7 @@ export default function CategoryManagement() {
       setSaving(true);
       setError("");
       try {
-        await axios.delete(`${API}/api/categories/${id}`);
+        await http.delete(`/api/categories/${id}`);
         await loadCategories();
         if (editingId === id) resetForm();
       } catch (err) {
