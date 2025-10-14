@@ -1,4 +1,3 @@
-
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
@@ -7,80 +6,62 @@ const path = require('path');
 const bcrypt = require('bcryptjs');
 const cron = require('node-cron');
 
-
 const app = express();
 
-
-/* ===== CORS with credentials (DEV whitelist) ===== */
+/* ===== CORS with credentials ===== */
 const whitelist = [
   'http://localhost:5173',
-  'https://shopdienthoai-nhat.vercel.app',     // prod FE
+  'https://shopdienthoai-nhat.vercel.app', // prod FE
 ];
-
 const isAllowedOrigin = (origin) => {
-  if (!origin) return true; // Postman/cURL/file://
-  if (whitelist.includes(origin)) return true;
-
-  // Cho phép các bản preview Vercel (subdomain bất kỳ của vercel.app)
+  if (!origin) return true;
   try {
     const url = new URL(origin);
-    if (url.hostname.endsWith('.vercel.app')) return true;
+    if (whitelist.includes(origin)) return true;
+    if (url.hostname.endsWith('.vercel.app')) return true; // preview
   } catch (_) {}
-
   return false;
 };
-
 const corsOptions = {
   origin(origin, cb) {
     return isAllowedOrigin(origin) ? cb(null, true) : cb(new Error('Not allowed by CORS'));
   },
   credentials: true,
   methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
-  // KHÔNG cần allowedHeaders -> cors tự phản chiếu từ preflight
 };
 app.use(cors(corsOptions));
-
-// (tuỳ chọn) xử lý nhanh preflight để tránh middleware khác can thiệp:
 app.options('*', cors(corsOptions));
 
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-/* ===== MySQL Connection ===== */
-/* ===== MySQL Connection (Railway env) ===== */
-const connStr = process.env.MYSQL_URL || process.env.MYSQL_PUBLIC_URL;
+/* ===== MySQL Connection (managed DB) ===== */
+// Nếu dùng host public (PlanetScale, Aiven...), cần SSL:
+const needSSL = process.env.MYSQL_SSL?.toLowerCase() === 'true';
 
-const db = connStr
-  ? mysql.createPool(connStr) // ví dụ: mysql://root:pass@mysql.railway.internal:3306/railway
-  : mysql.createPool({
-      host: process.env.MYSQLHOST || 'localhost',
-      user: process.env.MYSQLUSER || 'root',
-      password: process.env.MYSQLPASSWORD || '',
-      database: process.env.MYSQLDATABASE || 'shopdienthoai',
-      port: Number(process.env.MYSQLPORT || 3306),
-      waitForConnections: true,
-      connectionLimit: 10,
-      queueLimit: 0,
-    });
-
+const db = mysql.createPool({
+  host: process.env.MYSQLHOST || 'localhost',
+  port: Number(process.env.MYSQLPORT || 3306),
+  user: process.env.MYSQLUSER || 'root',
+  password: process.env.MYSQLPASSWORD || '',
+  database: process.env.MYSQLDATABASE || 'shopdienthoai',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+  ...(needSSL ? { ssl: { rejectUnauthorized: true } } : {}),
+});
 const dbp = db.promise();
 
 db.getConnection((err, conn) => {
-  if (err) {
-    console.error('❌ DB connect error:', err.message);
-  } else {
-    console.log('✅ MySQL pool ready');
-    conn.release();
-  }
+  if (err) console.error('❌ DB connect error:', err.message);
+  else { console.log('✅ MySQL pool ready'); conn.release(); }
 });
-/* ===== Multer setup ===== */
+
+/* ===== Multer (NHẮC: Vercel serverless không lưu file lâu dài) ===== */
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, 'uploads'),
-  filename: (req, file, cb) => {
-    const uniqueName = Date.now() + path.extname(file.originalname);
-    cb(null, uniqueName);
-  }
-}); 
+  filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
+});
 const upload = multer({ storage });
 
 /* ================================
@@ -1235,8 +1216,17 @@ app.put('/api/products/:id/extended', (req, res) => {
 });
 
 
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => console.log('API listening on ' + PORT));
+// Health check
+app.get('/', (_req, res) => res.status(200).send('OK'));
+
+// ✅ Chỉ listen khi chạy LOCAL
+if (!process.env.VERCEL) {
+  const PORT = process.env.PORT || 3001;
+  app.listen(PORT, () => console.log('API listening on ' + PORT));
+}
+
+// ✅ Xuất app cho Vercel
+module.exports = app;
 
 
 // Backend (index.js)
