@@ -1,10 +1,9 @@
 // src/admin/OrderManagement.jsx
 import React, { useEffect, useState, useCallback } from "react";
-import axios from "axios";
+import { http } from "../lib/api";
 import Swal from "sweetalert2";
 import "../styles/admin/OrderManagement.css";
 
-const API = "http://localhost:3001";
 const fmtVND = (n) =>
   (Number(n) || 0).toLocaleString("vi-VN", { style: "currency", currency: "VND" });
 
@@ -51,10 +50,10 @@ export default function OrderManagement() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API}/api/admin/donhang`);
+      const res = await http.get("/api/admin/donhang");
       setOrders(Array.isArray(res.data) ? res.data : []);
 
-      const req = await axios.get(`${API}/api/admin/yeucauhuy`);
+     const req = await http.get("/api/admin/yeucauhuy");
       const ids = new Set((Array.isArray(req.data) ? req.data : []).map((d) => d.MaDonHang));
       setCancelReqIds(ids);
     } catch (err) {
@@ -89,7 +88,7 @@ export default function OrderManagement() {
 
     withLoading("Đang xác nhận...");
     try {
-      await axios.put(`${API}/api/admin/xacnhan-don/${id}`);
+       await http.put(`/api/admin/xacnhan-don/${id}`);
       await load();
       Swal.fire({ icon: "success", title: "Đã xác nhận đơn", timer: 900, showConfirmButton: false });
     } catch (err) {
@@ -116,7 +115,7 @@ export default function OrderManagement() {
 
     withLoading("Đang hủy đơn...");
     try {
-      await axios.put(`${API}/api/admin/xacnhan-huy/${id}`);
+     await http.put(`/api/admin/xacnhan-huy/${id}`);
       await load();
       Swal.fire({ icon: "success", title: "Đã hủy đơn", timer: 900, showConfirmButton: false });
     } catch (err) {
@@ -141,7 +140,7 @@ export default function OrderManagement() {
 
     withLoading("Đang từ chối...");
     try {
-      await axios.put(`${API}/api/admin/tuchoi-huy/${id}`);
+      await http.put(`/api/admin/tuchoi-huy/${id}`);
       await load();
       Swal.fire({ icon: "success", title: "Đã từ chối yêu cầu hủy", timer: 900, showConfirmButton: false });
     } catch (err) {
@@ -172,7 +171,7 @@ export default function OrderManagement() {
 
     withLoading("Đang cập nhật...");
     try {
-      await axios.put(`${API}/api/admin/capnhat-trangthai/${id}`, { TrangThai });
+      await http.put(`/api/admin/capnhat-trangthai/${id}`, { TrangThai });
       await load();
       Swal.fire({ icon: "success", title: "Đã cập nhật", timer: 900, showConfirmButton: false });
     } catch (err) {
@@ -199,7 +198,7 @@ export default function OrderManagement() {
 
     withLoading("Đang xóa...");
     try {
-      await axios.delete(`${API}/api/admin/xoadonhang/${id}`);
+      await http.delete(`/api/admin/xoadonhang/${id}`);
       await load();
       Swal.fire({ icon: "success", title: "Đã xóa đơn", timer: 900, showConfirmButton: false });
     } catch (err) {
@@ -226,7 +225,7 @@ export default function OrderManagement() {
 
     withLoading("Đang duyệt thanh toán...");
     try {
-      await axios.put(`${API}/api/admin/donhang/approve-payment/${orderId}`);
+      await http.put(`/api/admin/donhang/approve-payment/${orderId}`);
       await load();
       Swal.fire({ icon: "success", title: "Đã duyệt thanh toán", timer: 900, showConfirmButton: false });
     } catch (err) {
@@ -253,7 +252,7 @@ export default function OrderManagement() {
 
     withLoading("Đang cập nhật hoàn tiền...");
     try {
-      await axios.put(`${API}/api/admin/donhang/refund-payment/${id}`);
+     await http.put(`/api/admin/donhang/refund-payment/${id}`);
       await load();
       Swal.fire({ icon: "success", title: "Đã đánh dấu hoàn tiền", timer: 900, showConfirmButton: false });
     } catch (err) {
@@ -270,7 +269,7 @@ export default function OrderManagement() {
   const markPicking = async (id) => {
     withLoading("Đang chuyển trạng thái VC...");
     try {
-      await axios.put(`${API}/api/admin/donhang/mark-picking/${id}`);
+     await http.put(`/api/admin/donhang/mark-picking/${id}`);
       await load();
       Swal.fire({ icon: "success", title: "Đã chuyển 'Đang lấy hàng'", timer: 800, showConfirmButton: false });
     } catch (err) {
@@ -286,7 +285,7 @@ export default function OrderManagement() {
   const markShipping = async (id) => {
     withLoading("Đang chuyển trạng thái VC...");
     try {
-      await axios.put(`${API}/api/admin/donhang/mark-shipping/${id}`);
+    await http.put(`/api/admin/donhang/mark-shipping/${id}`);
       await load();
       Swal.fire({ icon: "success", title: "Đã chuyển 'Đang giao'", timer: 800, showConfirmButton: false });
     } catch (err) {
@@ -302,7 +301,7 @@ export default function OrderManagement() {
   const markDelivered = async (id) => {
     withLoading("Đang chuyển trạng thái VC...");
     try {
-      await axios.put(`${API}/api/admin/donhang/mark-delivered/${id}`);
+      await http.put(`/api/admin/donhang/mark-delivered/${id}`);
       await load();
       Swal.fire({ icon: "success", title: "Đã chuyển 'Đã giao'", timer: 800, showConfirmButton: false });
     } catch (err) {
@@ -328,7 +327,7 @@ export default function OrderManagement() {
 
     withLoading("Đang hủy vận chuyển...");
     try {
-      await axios.put(`${API}/api/admin/donhang/cancel-shipping/${id}`);
+     await http.put(`/api/admin/donhang/cancel-shipping/${id}`);
       await load();
       Swal.fire({ icon: "success", title: "Đã hủy vận chuyển", timer: 800, showConfirmButton: false });
     } catch (err) {
