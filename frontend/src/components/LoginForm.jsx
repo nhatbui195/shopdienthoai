@@ -1,13 +1,13 @@
 // src/components/LoginForm.jsx
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import "../styles/components/LoginForm.css";
 import "../styles/components/ToastMini.css";
+import { api } from "../lib/api"; // ✅ dùng client chung
 
 // Cấu hình thời gian chờ (ms)
 const ADMIN_REDIRECT_DELAY = 2500; // ~2.5s cho nhân viên/admin
-const USER_REDIRECT_DELAY  = 120;  // giữ nhanh cho khách (có thể đổi thành 2500 nếu anh muốn)
+const USER_REDIRECT_DELAY  = 120;  // khách đi nhanh; đổi 2500 nếu muốn hiệu ứng đồng nhất
 
 function normalizeRole(r) {
   return String(r || "")
@@ -48,13 +48,11 @@ export default function LoginForm({ onSwitchToRegister, onLoginSuccess }) {
     try {
       setLoading(true);
 
-      const res = await axios.post("http://localhost:3001/api/login", {
-        username,
-        password,
-      });
+      // ✅ dùng api client (baseURL lấy từ env/localhost tuỳ môi trường)
+      const { data } = await api.post("/api/login", { username, password });
 
-      const token = res.data?.token;
-      const rawUser = res.data?.user;
+      const token = data?.token;
+      const rawUser = data?.user;
 
       if (!rawUser || !token) {
         appToast("error", "Phản hồi đăng nhập không hợp lệ");
@@ -68,17 +66,23 @@ export default function LoginForm({ onSwitchToRegister, onLoginSuccess }) {
         isAdmin: computeIsAdmin({ ...rawUser, role: normalizedRole }),
       };
 
-      // Lưu & set headers
+      // ✅ Lưu token & user
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
-      axios.defaults.headers.common["X-User-Role"] = user.role || "";
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+      // ✅ Set header chỉ cho client `api` (tránh đụng global axios)
+      api.defaults.headers.common["X-User-Role"] = user.role || "";
+      api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
       // Cập nhật UI ngay
       window.dispatchEvent(new CustomEvent("auth-changed", { detail: { user } }));
 
-      // Toast thành công: đặt đúng 2.5s để khớp thời gian chờ
-      appToast("success", `Đăng nhập thành công! Xin chào ${user.username || username}`, ADMIN_REDIRECT_DELAY);
+      // Toast thành công
+      appToast(
+        "success",
+        `Đăng nhập thành công! Xin chào ${user.username || username}`,
+        ADMIN_REDIRECT_DELAY
+      );
 
       // Đóng modal (nếu có)
       onLoginSuccess?.();
@@ -86,13 +90,12 @@ export default function LoginForm({ onSwitchToRegister, onLoginSuccess }) {
       // Bỏ nháy loader ở lần chuyển route kế
       window.__SKIP_NEXT_PULSE__ = true;
 
-      // Điều hướng: NHÂN VIÊN đợi ~2.5s rồi mới vào admin
+      // Điều hướng
       const goAdmin = user.isAdmin === true;
       navTimer.current = setTimeout(() => {
         if (goAdmin) {
           navigate("/admin", { replace: true });
         } else {
-          // khách có thể đi nhanh; nếu anh muốn cũng đợi 2.5s thì đổi sang ADMIN_REDIRECT_DELAY
           navigate("/", { replace: true });
         }
       }, goAdmin ? ADMIN_REDIRECT_DELAY : USER_REDIRECT_DELAY);
