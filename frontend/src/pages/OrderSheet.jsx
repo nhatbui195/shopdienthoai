@@ -1,15 +1,13 @@
 // src/pages/OrderSheet.jsx
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { createPortal } from "react-dom";
-// import axios from "axios";
 import Swal from "sweetalert2";
 import "../styles/pages/OrderSheet.css";
 import { upsertCartItem } from "../utils/cart";
-import { api, fmtVND } from "../lib/api"; // ✅ dùng client & helper chung
+import { api } from "../lib/api"; // ✅ dùng client chung
 
-// const API = "http://localhost:3001";
-// const fmtVND = (n) =>
-//   (Number(n) || 0).toLocaleString("vi-VN", { style: "currency", currency: "VND" });
+const fmtVND = (n) =>
+  (Number(n) || 0).toLocaleString("vi-VN", { style: "currency", currency: "VND" });
 
 /* =================== helpers =================== */
 const readJSON = (k, fb) => { try { return JSON.parse(localStorage.getItem(k)) ?? fb; } catch { return fb; } };
@@ -301,7 +299,6 @@ export default function OrderSheet({
 
     try {
       setSubmitting(true);
-      // const res = await axios.post(`${API}/api/donhang`, payload);
       const res = await api.post(`/api/donhang`, payload); // ✅ dùng api client chung
       const maDonHang = res?.data?.MaDonHang;
 
