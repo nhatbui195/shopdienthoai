@@ -1,7 +1,7 @@
 // src/admin/ReviewManagement.jsx
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams, useParams } from "react-router-dom";
-import { api } from "../lib/api";               // ✅ dùng client chung
+import { api } from "../lib/api";               // ✅ client chung
 import "../styles/admin/ReviewManagement.css";
 
 export default function ReviewManagement({ productId: productIdProp }) {
@@ -32,12 +32,12 @@ export default function ReviewManagement({ productId: productIdProp }) {
     try {
       const [p, rv, cm] = await Promise.all([
         api.get(`/api/products/${productId}`),
-        api.get(`/api/reviews`,   { params: { productId } }),
-        api.get(`/api/comments`,  { params: { productId } }),
+        api.get(`/api/reviews`,  { params: { productId } }),
+        api.get(`/api/comments`, { params: { productId } }),
       ]);
       setProduct(p.data || null);
-      setReviews(rv.data || []);
-      setComments(cm.data || []);
+      setReviews(Array.isArray(rv.data) ? rv.data : []);
+      setComments(Array.isArray(cm.data) ? cm.data : []);
     } catch (e) {
       console.error("Load reviews/comments failed:", e);
     } finally {
@@ -162,3 +162,10 @@ export default function ReviewManagement({ productId: productIdProp }) {
                   </button>
                 </div>
               </div>
+            ))}
+          </section>
+        </>
+      )}
+    </div>
+  );
+}
