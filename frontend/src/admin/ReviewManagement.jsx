@@ -1,7 +1,7 @@
 // src/admin/ReviewManagement.jsx
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams, useParams } from "react-router-dom";
-import { api } from "../lib/api";               // ✅ client chung
+import { api } from "../lib/api";               // ✅ dùng client chung
 import "../styles/admin/ReviewManagement.css";
 
 export default function ReviewManagement({ productId: productIdProp }) {
