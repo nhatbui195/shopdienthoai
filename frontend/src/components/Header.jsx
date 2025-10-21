@@ -4,6 +4,13 @@ import Swal from "sweetalert2";
 import "../styles/components/Header.css";
 import AuthModal from "./AuthModal";
 
+/* ==== THÊM: client axios và helper ảnh an toàn ==== */
+import axios from "axios";
+const API_BASE = import.meta.env.VITE_API_URL?.replace(/\/+$/, "") || "http://localhost:3001";
+const api = axios.create({ baseURL: API_BASE, withCredentials: true });
+const fileURL = (src) => (src && /^https?:\/\//i.test(src) ? src : `${API_BASE}${src || ""}`);
+/* ================================================= */
+
 function readUser() {
   try { return JSON.parse(localStorage.getItem("user")); } catch { return null; }
 }
@@ -71,10 +78,7 @@ export default function Header() {
   const fetchSuggest = useCallback(async (text) => {
     if (!text) { setSuggestions([]); return; }
     try {
-      const { data } = await api.get("/api/suggestions", {
-        params: { keyword: text },
-        withCredentials: true,
-      });
+      const { data } = await api.get("/api/suggestions", { params: { keyword: text } });
       setSuggestions(Array.isArray(data) ? data : []);
     } catch (err) {
       if (import.meta.env?.DEV) console.debug("suggestions error:", err);
@@ -261,7 +265,6 @@ export default function Header() {
                 onClick={() => selectSuggest(s)}
                 title={s.TenSanPham}
               >
-                {/* ✅ ảnh an toàn đường dẫn */}
                 <img src={fileURL(s.AnhDaiDien)} alt={s.TenSanPham} />
                 <span className="name">{s.TenSanPham}</span>
               </div>
