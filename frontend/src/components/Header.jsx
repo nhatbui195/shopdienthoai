@@ -3,7 +3,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import "../styles/components/Header.css";
 import AuthModal from "./AuthModal";
-import { api, fileURL } from "../lib/api"; // ✅ dùng client & helper ảnh
 
 function readUser() {
   try { return JSON.parse(localStorage.getItem("user")); } catch { return null; }
